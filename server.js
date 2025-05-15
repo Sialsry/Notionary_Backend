@@ -1,11 +1,17 @@
-const express = require("express");
+const express = require('express')
+const cors = require('cors')
 
 const app = express();
 
-app.get("/", (req, res) => {
-  res.send("<div>hello</div>");
-});
+app.use(cors({origin : '*'}))
+app.use(express.json())
+app.use(express.urlencoded({extended : false}))
 
-app.listen(3000, () => {
-  console.log("server is running on port 3000");
-});
+app.use('/', (req,res) => [
+    res.json('홈페이지')
+])
+
+
+app.listen(4000, (req, res) => {
+    console.log('server on~')
+})
