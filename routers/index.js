@@ -3,8 +3,9 @@ const postRouter = require("./postRouter");
 const signRouter = require("./signRouter");
 const mypageRouter = require("./mypageRouter");
 const myprojectRouter = require("./myprojectRouter");
-const teamprojectRouter = require("./teamporjectRouter");
-const loginCheck = require("./middleware");
+const teamprojectRouter = require("./teamprojectRouter");
+const loginCheck = require("../middlewares/middleware");
+const authRouter = require("./authRouter");
 
 module.exports = {
   mainRouter,
@@ -14,4 +15,5 @@ module.exports = {
   myprojectRouter,
   teamprojectRouter,
   loginCheck,
+  authRouter,
 };
