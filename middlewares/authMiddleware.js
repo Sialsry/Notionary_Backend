@@ -5,6 +5,7 @@ exports.auth = async (req, res, next) => {
   try {
     // Get token from header
     const token = req.header("Authorization")?.replace("Bearer ", "");
+    console.log("Token:", token);
 
     if (!token) {
       return res.status(401).json({
@@ -15,6 +16,7 @@ exports.auth = async (req, res, next) => {
 
     // Verify token
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    console.log("Decoded:", decoded);
 
     // Find user
     const user = await User.findOne({ where: { uid: decoded.uid } });

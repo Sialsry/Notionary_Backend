@@ -18,14 +18,14 @@ app.use(cookieParser());
 const {
   mainRouter,
   postRouter,
-  signRouter,
+  userRouter,
   mypageRouter,
   myprojectRouter,
   teamprojectRouter,
   authRouter,
 } = require("./routers");
 
-app.use(cors({ origin: "*" }));
+app.use(cors({ origin: "http://localhost:3000", credentials: true }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(morgan("dev"));
@@ -33,7 +33,7 @@ app.use(morgan("dev"));
 // app.use("/music", express.static(path.join(__dirname, "public/musics")));
 // app.use(loginCheck);
 
-// app.use("/", signRouter);
+app.use("/user", userRouter);
 app.use("/main", mainRouter);
 app.use("/post", postRouter);
 app.use("/mypage", mypageRouter);
@@ -90,13 +90,11 @@ app.get("/auth/kakao/callback", async (req, res) => {
     });
   }
 
-  const token = jwt.sign({ id, properties }, "jwt_key", { expiresIn: "1h" });
-  res.cookie("login_access_token", token, {
-    httpOnly: true,
-    maxAge: 60 * 60 * 60 * 1000,
+  const token = jwt.sign({ uid: id }, process.env.JWT_SECRET, {
+    expiresIn: "1h",
   });
-  res.cookie("kakao_access_token", access_token, {
-    httpOnly: true,
+  res.cookie("login_access_token", token, {
+    httpOnly: false,
     maxAge: 60 * 60 * 60 * 1000,
   });
   res.redirect("http://localhost:3000/main");
@@ -111,7 +109,6 @@ app.get("/auth/kakao/logout/callback", (req, res) => {
   // 로그아웃 콜백
   try {
     res.clearCookie("login_access_token");
-    res.clearCookie("kakao_access_token");
     res.redirect("/");
   } catch (error) {
     console.log(error);

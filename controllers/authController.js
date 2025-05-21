@@ -59,7 +59,7 @@ exports.register = async (req, res) => {
     const hashedPassword = await bcrypt.hash(upw, saltRounds);
 
     // Set default profile image path
-    const profImg = "../images/default_profile.png";
+    const profImg = "/images/default_profile.png";
 
     // Create new user
     const newUser = await User.create({
