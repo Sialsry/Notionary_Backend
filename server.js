@@ -23,6 +23,7 @@ const {
   myprojectRouter,
   teamprojectRouter,
   authRouter,
+  workspaceRouter,
 } = require("./routers");
 
 app.use(cors({ origin: "http://localhost:3000", credentials: true }));
@@ -40,6 +41,7 @@ app.use("/mypage", mypageRouter);
 app.use("/myproject", myprojectRouter);
 app.use("/teamproject", teamprojectRouter);
 app.use("/api/auth", authRouter);
+app.use("/saveData", workspaceRouter)
 
 app.get("/", (req, res) => {
   res.send("Notionary API is running");
