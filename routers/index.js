@@ -1,19 +1,20 @@
 const mainRouter = require("./mainRouter");
 const postRouter = require("./postRouter");
-const signRouter = require("./signRouter");
+const userRouter = require("./userRouter");
 const mypageRouter = require("./mypageRouter");
 const myprojectRouter = require("./myprojectRouter");
 const teamprojectRouter = require("./teamprojectRouter");
-const loginCheck = require("./middleware");
-const workspaceRouter = require('./workspaceRouter')
+const loginCheck = require("../middlewares/middleware");
+const authRouter = require("./authRouter");
 
 module.exports = {
   workspaceRouter,
   mainRouter,
   postRouter,
-  signRouter,
+  userRouter,
   mypageRouter,
   myprojectRouter,
   teamprojectRouter,
   loginCheck,
+  authRouter,
 };
