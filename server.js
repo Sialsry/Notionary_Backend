@@ -5,6 +5,8 @@ const socketIo = require("socket.io");
 const jwt = require("jsonwebtoken");
 const fs = require("fs");
 const path = require("path");
+const cookieParser = require("cookie-parser");
+const cors = require("cors");
 const {
   loginCheck,
   mainRouter,
@@ -13,9 +15,8 @@ const {
   mypageRouter,
   myprojectRouter,
   teamprojectRouter,
+  workspaceRouter
 } = require("./routers");
-const cookieParser = require("cookie-parser");
-const cors = require("cors");
 
 const app = express();
 
@@ -32,7 +33,11 @@ app.use("/main", mainRouter);
 app.use("/post", postRouter);
 app.use("/mypage", mypageRouter);
 app.use("/myproject", myprojectRouter);
-app.use("/teamproject", teamprojectRouter);
+// app.use("/teamproject", teamprojectRouter);
+app.use("/saveData", workspaceRouter);
+
+
+
 
 app.listen(4000, (req, res) => {
   console.log("server on~");
