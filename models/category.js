@@ -14,6 +14,11 @@ class Category extends Model {
           type: DataTypes.STRING(20),
           allowNull: false,
         },
+        depth : {
+          type : DataTypes.INTEGER,
+          allowNull : false,
+          defaultValue : 1
+        },
       },
       {
         sequelize,
@@ -27,6 +32,11 @@ class Category extends Model {
     db.Category.hasMany(db.Post, {
       foreignKey: "category_id",
       sourceKey: "category_id",
+    });
+    db.Category.hasOne(db.Category, {
+      foreignKey : "category_id_fk",
+      as : "SubCategory",
+      sourceKey : "category_id"
     });
   }
 }
