@@ -35,8 +35,44 @@ exports.getUserInfo = async (req, res) => {
   }
 };
 
-// 유저 정보 수정: nick, profImg, phone, dob, address, gender
-
-// 유저 비밀번호 변경: upw
-
-// 유저 탈퇴
+// 유저 정보 수정
+exports.updateUserInfo = async (req, res) => {
+  try {
+    const { uid } = req.user;
+    console.log("req.user", req.user);
+    console.log("req.body", req.body);
+    // 프로필 사진이 업로드된 경우
+    if (req.file) {
+      const oldProfImg = await User.findOne({
+        where: { uid },
+        attributes: ["profImg"],
+      });
+      const oldProfImgPath = path.join(
+        __dirname,
+        "..",
+        "uploads",
+        "profile",
+        oldProfImg.profImg
+      );
+      // 기존 프로필 사진 삭제
+      if (fs.existsSync(oldProfImgPath)) {
+        fs.unlinkSync(oldProfImgPath);
+      }
+      req.body.profImg = req.file.filename;
+    }
+    await User.update({
+      where: { uid },
+      // profImg: req.body.profImg,
+      nick: req.body.nick,
+      phone: req.body.phone,
+      dob: req.body.dob,
+      addr: req.body.addr,
+    });
+  } catch (error) {
+    console.error("Error updating user info:", error);
+    return res.status(500).json({
+      success: false,
+      message: "서버 오류가 발생했습니다.",
+    });
+  }
+};

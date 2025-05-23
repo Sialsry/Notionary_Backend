@@ -2,12 +2,18 @@
 const router = require("express").Router();
 const userController = require("../controllers/userController");
 const { auth } = require("../middlewares/authMiddleware");
+const { upload } = require("../middlewares/multerMiddleware");
 
 // 유저 정보 조회
 router.get("/info", auth, userController.getUserInfo);
 
-// 유저 정보 수정
-// router.put("/info", auth, userController.updateUserInfo);
+// 유저 정보 수정. multer 미들웨어 사용
+router.post(
+  "/update",
+  auth,
+  upload.single("profImg"),
+  userController.updateUserInfo
+);
 
 // // 유저 비밀번호 변경
 // router.put("/password", auth, userController.updateUserPassword);
