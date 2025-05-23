@@ -58,11 +58,34 @@ const getSubPost = async (categoryName, subCategory) => {
   }
 }
 
+// (async () => {
+//     const result = await getSubPost('기술스택');
+//     console.log('getSubPost 결과:', result);
+// })();
+
+const CreatePost = async ({ post_id, uid, category_id, title, content, imgPaths, videoPaths }) => {
+  try {
+      const data =  await Post.create({ post_id,  uid, category_id, title, content, imgPaths : JSON.stringify(imgPaths), videoPaths : JSON.stringify(videoPaths)})
+      return {state : 200, message : "게시글 등록 성공!!!", data}
+  } catch (error) {
+      return {state : 484, message : "게시글 등록 실패!!!", error}
+  }
+  
+}
+
 (async () => {
-    const result = await getSubPost('IT');
-    console.log('getSubPost 결과:', result);
+  const result = await CreatePost({
+    post_id : "1",
+    uid: 'user1',
+    category_id: 1,
+    title: '게시글 등록 첫번째',
+    content: '게시글 내용ㅎㅎㅎㅎㅎㅎㅎㅎㅎㅎㅎㅎㅎ',
+    imgPaths: ['img1.jpg', 'img2.jpg'],
+    videoPaths: ['video1.mp4', 'video02.mp4']
+  });
+  console.log('CreatePost 결과:', result);
 })();
 
 
 
-module.exports = { getAllPost , getSubPost};
+module.exports = { getAllPost , getSubPost, CreatePost};
