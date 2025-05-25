@@ -42,7 +42,8 @@ app.use("/mypage", mypageRouter);
 app.use("/myproject", myprojectRouter);
 app.use("/teamproject", teamprojectRouter);
 app.use("/api/auth", authRouter);
-app.use("/workSpace", workspaceRouter)
+app.use("/workspace", workspaceRouter)
+
 
 app.get("/", (req, res) => {
   res.send("Notionary API is running");
