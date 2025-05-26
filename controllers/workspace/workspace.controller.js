@@ -117,14 +117,14 @@ const findWorkspacedata = async () => {
             })
             result.push({ [workspace]: formatted });
         }
-        console.log(result[0], 'restt')
+        console.log(result, 'restt')
         if(result.length >= 0) {
             const newResult = result.map(el => [el])
             console.log(newResult)
             return newResult 
         }
         // console.log(result)
-        return(result)
+        return({result})
     } catch (error) {
         console.log(error)
     }

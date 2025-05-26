@@ -39,7 +39,7 @@ router.get('/selectspace/:title', async (req, res) => {
 router.get('/workspacedata', async (req, res) => {
     const data = await findWorkspacedata();
     console.log(Array.isArray(data), data, 'true');
-    res.json(data)
+    res.json({data})
 })
 
 module.exports = router;
