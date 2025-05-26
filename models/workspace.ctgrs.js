@@ -37,7 +37,6 @@ class Workspacectgrs extends Model {
         parent_id: {
           type: DataTypes.STRING(120),
         }
-
       },
       {
         sequelize,
@@ -45,26 +44,33 @@ class Workspacectgrs extends Model {
         tableName: "workspacectgrs",
         timestamps: true,
         uniqueKeys: {
-          unique_subcategory_constraint: {
+          unique_subcategory: {
             fields: ['uid', 'workspace_name', 'workspacectgrs_name']
+          },
+          unique_subcategory_constraint: {
+            fields: ['uid', 'workspace_name', 'parent_id', 'workspacesubctgrs_name']
           }
         }
-
       }
     );
   }
   static associate(db) {
-    this.hasMany(db.Workspacectgrs, {
+    this.hasOne(db.Workspacectgrs, {
       as: 'subCategories',
-      foreignKey: 'parent_id',
+      foreignKey: 'fk_workspace_id',
+      sourceKey: 'workspace_id',
     });
-    this.belongsTo(db.Workspacectgrs, {
-      as: 'parentCategories',
-      foreignKey: 'parent_id'
-    });
+    // this.hasMany(db.Workspacectgrs, {
+    //   as: 'subCategories',
+    //   foreignKey: 'workspace_id',
+    // });
+    // this.belongsTo(db.Workspacectgrs, {
+    //   as: 'parentCategories',
+    //   foreignKey: 'workspace_id'
+    // });
     this.belongsTo(db.Workspace, {
-      foreignKey: "workspace_name",
-      targetKey: "workspace.name"
+      foreignKey: "fk_workspace_name",
+      targetKey: "workspace_name"
 
     })
     this.belongsTo(db.User, {
