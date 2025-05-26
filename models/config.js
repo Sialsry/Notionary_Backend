@@ -8,6 +8,9 @@ const Category = require("./category");
 const Heart = require("./heart");
 const MyProject = require("./myproject");
 const TeamProject = require("./teamproject");
+const Workspace = require("././workspace");
+const Workspacectgrs = require('./workspace.ctgrs');
+
 
 const sequelize = new Sequelize(
   process.env.DATABASE_NAME, // 사용할 데이터 베이스 이름
@@ -20,7 +23,8 @@ const sequelize = new Sequelize(
     port: process.env.DATABASE_PORT,
   }
 );
-
+const workspacectgrs = Workspacectgrs.init(sequelize)
+const workspace = Workspace.init(sequelize)
 const user = User.init(sequelize);
 const team = Team.init(sequelize);
 const post = Post.init(sequelize);
@@ -31,6 +35,8 @@ const myproject = MyProject.init(sequelize);
 const teamproject = TeamProject.init(sequelize);
 
 const db = {
+  Workspacectgrs : workspacectgrs,
+  Workspace : workspace,
   User: user,
   Team: team,
   Post: post,
@@ -41,6 +47,8 @@ const db = {
   TeamProject: teamproject,
 };
 
+
+// page.associate(db);
 user.associate(db);
 team.associate(db);
 post.associate(db);
@@ -58,3 +66,16 @@ sequelize
   .catch(console.log);
 
 module.exports = db;
+
+
+const datainit = async () => {
+    const data = ['개인 워크스페이스', '팀 워크이스페이스']
+    await Promise.all( data.map( (el) => {
+        console.log(el, 'hey')
+         Workspace.create({
+            workspace_name : el
+        })
+    }))
+}
+
+// datainit()
