@@ -2,7 +2,8 @@
 const router = require("express").Router();
 const userController = require("../controllers/userController");
 const { auth } = require("../middlewares/authMiddleware");
-const { upload } = require("../middlewares/multerMiddleware");
+const { profileUpload } = require("../middlewares/multerMiddleware");
+// const { upload } = require("../middlewares/multer");
 
 // 유저 정보 조회
 router.get("/info", auth, userController.getUserInfo);
@@ -11,15 +12,12 @@ router.get("/info", auth, userController.getUserInfo);
 router.post(
   "/update",
   auth,
-  upload.single("profImg"),
+  profileUpload, // 프로필 사진 업로드 미들웨어
   userController.updateUserInfo
 );
 
 // // 유저 비밀번호 변경
 // router.put("/password", auth, userController.updateUserPassword);
-
-// // 유저 프로필 사진 변경
-// router.put("/profile", auth, userController.updateUserProfile);
 
 // // 유저 탈퇴
 // router.delete("/delete", auth, userController.deleteUser);
