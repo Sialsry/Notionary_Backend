@@ -67,14 +67,14 @@ const findWorkspacedata = async (workspacename) => {
         const data = await Workspacectgrs.findAll({
             where: {
                 uid: '4272178176',
-                workspace_name: workspacename
+                // workspace_name: workspacename
             },
             include: [{
                 model: Workspacectgrs,
                 as: 'subCategories',
                 attributes: ['workspacesubctgrs_name']
             }],
-            attribute: ['workspace_name', 'workspacectgrs_name']
+            attributes: ['workspace_name', 'workspacectgrs_name']
         }
         )
         const rawData = data.map((el, index) => {
@@ -127,7 +127,7 @@ const findWorkspacedata = async (workspacename) => {
             console.log(newResult)
             return newResult
         }
-        console.log(result, 'result')
+        // console.log(result)
         return ({ result })
     } catch (error) {
         console.log(error)

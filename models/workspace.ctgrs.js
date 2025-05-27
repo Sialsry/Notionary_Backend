@@ -68,6 +68,10 @@ class Workspacectgrs extends Model {
     //   as: 'parentCategories',
     //   foreignKey: 'workspace_id'
     // });
+    this.hasMany(db.Page,{
+      foreignKey: 'fk_workspace_id',
+      targetKey: 'workspace_id'
+    })
     this.belongsTo(db.Workspace, {
       foreignKey: "fk_workspace_name",
       targetKey: "workspace_name"
