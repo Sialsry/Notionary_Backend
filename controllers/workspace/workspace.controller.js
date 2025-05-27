@@ -1,5 +1,4 @@
-const { where } = require("sequelize");
-const { Workspace, Workspacectgrs, Page } = require("../../models/config")
+const { Workspace, Workspacectgrs } = require("../../models/config")
 
 
 
@@ -25,7 +24,6 @@ const createFolder = async ({ data }) => {
         //     }
         // }
         const { workSpace, folderName } = data;
-        // console.log(workSpace, folderName,'dkfjdkfjdkfjd')
         await Workspacectgrs.create({
             uid: '4272178176',
             workspace_name: workSpace,
@@ -35,8 +33,8 @@ const createFolder = async ({ data }) => {
 
         return { state: 200, message: 'success' }
     } catch (error) {
-        console.log(error)
         return { state: 401, message: error }
+        console.log(error)
     }
 }
 
@@ -44,9 +42,9 @@ const createFolder = async ({ data }) => {
 
 
 const createPage = async ({ data }) => {
-    // console.log(data, 'dfdfdfd')
     try {
         const { workSpace, folderName, fileName } = data;
+        console.log(data, 'dfdfdfd', workSpace, folderName, fileName)
         await Workspacectgrs.create({
             uid: '4272178176',
             workspace_name: workSpace,
@@ -61,18 +59,17 @@ const createPage = async ({ data }) => {
     }
 }
 
-const findWorkspacedata = async (workspacename) => {
-    console.log(workspacename, 'workspacename')
+const findWorkspacedata = async (wname) => {
     try {
         const data = await Workspacectgrs.findAll({
             where: {
                 uid: '4272178176',
-                workspace_name: workspacename
+                workspace_name: wname
             },
             include: [{
                 model: Workspacectgrs,
                 as: 'subCategories',
-                attributes: ['workspacesubctgrs_name']
+                attribute: ['workspacesubctgrs_name']
             }],
             attribute: ['workspace_name', 'workspacectgrs_name']
         }
@@ -83,10 +80,11 @@ const findWorkspacedata = async (workspacename) => {
 
         const result = [];
         const grouped = {};
-        for (const item of rawData) {
+        for await (const item of rawData) {
             const workspaceName = item.workspace_name;
             const isParent = item.depth === 1;
             const isChild = item.depth === 2;
+            console.log(item, 'item', workspaceName, isParent, isChild)
 
             if (!grouped[workspaceName]) {
                 grouped[workspaceName] = {}
@@ -96,100 +94,62 @@ const findWorkspacedata = async (workspacename) => {
             }
             if (isChild) {
                 const parent = rawData.find(
-                    (p) => String(p.workspacectgrs_name) === String(item.parent_id) && p.depth === 1
+                    (p) => p.workspacectgrs_name === item.parent_id && p.depth === 1
                 )
                 if (parent && parent.workspacectgrs_name) {
-                    if (!grouped[workspaceName]) {
-                        grouped[workspaceName] = {};
-                    }
+                    // if (!grouped[workspaceName]) {
+                    //     grouped[workspaceName] = {};
+                    // }
 
                     if (!grouped[workspaceName][parent.workspacectgrs_name]) {
                         grouped[workspaceName][parent.workspacectgrs_name] = [];
                     }
-                    if (item.workspacesubctgrs_name) {
-                        grouped[workspaceName][parent.workspacectgrs_name].push(item.workspacesubctgrs_name);
-                    }
-                    console.log(grouped,'grouped')
+                    console.log(item.workspacesubctgrs_name,'23222')
+                    grouped[workspaceName][parent.workspacectgrs_name].push(item.workspacesubctgrs_name);
+
                 }
+                console.log(grouped, 'grouped')
             }
         }
-        // console.log(grouped, 'grouped')
+        console.log(grouped, 'grouped')
         for (const [workspace, ctgrs] of Object.entries(grouped)) {
-            console.log(ctgrs, 'ctgrs')
+            console.log(ctgrs, 'ctgrs', workspace)
             const formatted = Object.entries(ctgrs).map(([ctgrName, subCtgrs]) => {
                 return { [ctgrName]: subCtgrs }
             })
             result.push({ [workspace]: formatted });
+            console.log(formatted, 'formatted', workspace, result)
         }
         console.log(result, 'restt')
-        if (result.length >= 0) {
-            const newResult = result.map(el => [el])
-            console.log(newResult)
-            return newResult
-        }
-        console.log(result, 'result')
-        return ({ result })
+        // if(result.length >= 0) {
+        //     const newResult = result.map(el => [el])
+        //     console.log(newResult)
+        //     return newResult 
+        // }
+        // console.log(result)
+        return (result)
     } catch (error) {
         console.log(error)
     }
 }
 // findWorkspacedata()
 
-const findworkspaceid = async (workspacename, foldername, filename) => {
-    const data = await Workspacectgrs.findOne({
-        where: {
-            uid: '4272178176',
-            workspace_name: workspacename,
-            parent_id: foldername,
-            workspacesubctgrs_name: filename
-        },
-        attributes: ['workspace_id']
-    })
-    // console.log(data.dataValues, 'workspaceid123')
-    return ({ workspacedataid: data.dataValues })
-}
-
-
-const savetextData = async (wid, filename, Data) => {
-    console.log(wid, filename, Data, 'savetextdata')
-    try {
-        try {
-
-            const data = await Page.create({
-                workspace_id: wid,
-                Page_name: filename,
-                page_content: Data
-            })
-            return ({ state: 200, message: 'textdata save successful' })
-        } catch (error) {
-            const data = await Page.update(
-                { page_content: Data },
-                {
-                    where: {
-                        Page_name: filename,
-                        workspace_id: wid,
-                    }
-                })
-            return ({ state: 200, message: 'textdata update successful' })
-        }
-
-    } catch (error) {
-        console.log(error, 'error')
-        return ({ state: 401, message: error })
-    }
-}
-
-const getpageData = async (wid, filename) => {
-    const [data] = await Page.findAll({
-        where: {
-            workspace_id: wid,
-            Page_name: filename
+const findWspaceContent = async (wname) => {
+    const data = await Workspacectgrs.findAll({
+        where : {
+            uid : '4272178176',
+            workspace_name : wname,
+            depth : 1
         }
     })
-    const newdata = data.dataValues
-    console.log(newdata, ' data')
+    const newdata = data.map((el) => 
+        el.dataValues
+    )
+    console.log(newdata, 'content')
     return newdata
 }
 
+// findWspaceContent()
 
-module.exports = { createPage, createFolder, findworkspaceid, savetextData, findWorkspacedata, getpageData }
+
+module.exports = { createPage, createFolder, findWorkspacedata, findWspaceContent }
