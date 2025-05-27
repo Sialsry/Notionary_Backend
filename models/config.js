@@ -10,7 +10,7 @@ const MyProject = require("./myproject");
 const TeamProject = require("./teamproject");
 const Workspace = require("./workspace");
 const Workspacectgrs = require('./workspace.ctgrs');
-
+const Page = require('./page')
 
 const sequelize = new Sequelize(
   process.env.DATABASE_NAME, // 사용할 데이터 베이스 이름
@@ -23,6 +23,7 @@ const sequelize = new Sequelize(
     port: process.env.DATABASE_PORT,
   }
 );
+const page = Page.init(sequelize)
 const workspacectgrs = Workspacectgrs.init(sequelize)
 const workspace = Workspace.init(sequelize)
 const user = User.init(sequelize);
@@ -35,6 +36,7 @@ const myproject = MyProject.init(sequelize);
 const teamproject = TeamProject.init(sequelize);
 
 const db = {
+  Page : page,
   Workspacectgrs : workspacectgrs,
   Workspace : workspace,
   User: user,
@@ -47,9 +49,9 @@ const db = {
   TeamProject: teamproject,
 };
 
-
 workspacectgrs.associate(db);
 workspace.associate(db);
+page.associate(db)
 user.associate(db);
 team.associate(db);
 post.associate(db);
