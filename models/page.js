@@ -5,17 +5,18 @@ class Page extends Model {
   static init(sequelize) {
     return super.init(
       {
-        workspace_id : {
-            type : DataTypes.INTEGER,
+        workspace_id: {
+          type: DataTypes.INTEGER,
+          allowNull: false,
         },
         Page_name: {
-          type: DataTypes.STRING(120),
           primaryKey: true,
+          type: DataTypes.STRING(120),
           allowNull: false,
         },
         page_content: {
-          type : DataTypes.TEXT,
-          
+          type: DataTypes.TEXT,
+
         }
       },
       {
@@ -28,8 +29,8 @@ class Page extends Model {
   }
   static associate(db) {
     this.belongsTo(db.Workspacectgrs, {
-      foreignKey: "workspace_id",
-      targetKey: "project_name",
+      foreignKey: "fk_workspace_id",
+      targetKey: "workspace_id",
     });
     // db.Page.hasMany(db.Pages, {
     //   foreignKey: "project_id",
