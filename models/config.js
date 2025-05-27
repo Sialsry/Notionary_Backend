@@ -8,7 +8,7 @@ const Category = require("./category");
 const Heart = require("./heart");
 const MyProject = require("./myproject");
 const TeamProject = require("./teamproject");
-const Workspace = require("././workspace");
+const Workspace = require("./workspace");
 const Workspacectgrs = require('./workspace.ctgrs');
 
 
@@ -48,7 +48,8 @@ const db = {
 };
 
 
-// page.associate(db);
+workspacectgrs.associate(db);
+workspace.associate(db);
 user.associate(db);
 team.associate(db);
 post.associate(db);

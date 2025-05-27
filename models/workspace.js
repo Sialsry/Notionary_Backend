@@ -22,9 +22,9 @@ class Workspace extends Model {
     );
   }
   static associate(db) {
-    db.Workspace.belongsTo(db.Workspacectgrs, {
-      foreignKey: "Workspace_name",
-      sourceKey : "Workspace_name",
+    db.Workspace.hasMany(db.Workspacectgrs, {
+      foreignKey: "fk_workspace_name",
+      sourceKey : "workspace_name",
     });
   
   }

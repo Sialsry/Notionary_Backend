@@ -30,7 +30,10 @@ const createFolder = async ({ data }) => {
             workspacectgrs_name: folderName,
             depth: 1
         })
+
+        return {state : 200, message : 'success'}
     } catch (error) {
+        return {state : 401, message : error}
         console.log(error)
     }
 }
@@ -51,27 +54,83 @@ const createPage = async ({ data }) => {
         })
         return ({ state: 200, message: 'successful' })
     } catch (error) {
-        console.log(error)
+        // console.log(error)
         return ({ state: 401, message: error })
     }
 }
 
-const findWorkspace = async () => {
+const findWorkspacedata = async () => {
     try {
         const data = await Workspacectgrs.findAll({
             where: {
                 uid: '4272178176',
-                workspace_name: '개인 워크스페이스',
-            }
-        })
-        const result = data.map((el, index) => {
+                
+            },
+            include: [{
+                model: Workspacectgrs,
+                as: 'subCategories',
+                attributes: ['workspacesubctgrs_name']
+            }],
+            attribute: ['workspace_name', 'workspacectgrs_name']
+        }
+        )
+        const rawData = data.map((el, index) => {
             return el.dataValues
         })
-        console.log(result, 'findworkspace')
-    } catch (error) {
 
+        const result = [];
+        const grouped = {};
+        for (const item of rawData) {
+            const workspaceName = item.workspace_name;
+            const isParent = item.depth === 1;
+            const isChild = item.depth === 2;
+
+            if (!grouped[workspaceName]) {
+                grouped[workspaceName] = {}
+            }
+            if (isParent) {
+                grouped[workspaceName][item.workspacectgrs_name] = []
+            }
+            if (isChild) {
+                const parent = rawData.find(
+                    (p) => String(p.workspacectgrs_name) === String(item.parent_id) && p.depth === 1
+                )
+                if (parent && parent.workspacectgrs_name) {
+                    if (!grouped[workspaceName]) {
+                        grouped[workspaceName] = {};
+                    }
+
+                    if (!grouped[workspaceName][parent.workspacectgrs_name]) {
+                        grouped[workspaceName][parent.workspacectgrs_name] = [];
+                    }
+                    if (item.workspacesubctgrs_name) {
+                        grouped[workspaceName][parent.workspacectgrs_name].push(item.workspacesubctgrs_name);
+                    }
+                }
+            }
+        }
+        console.log(grouped,'grouped')
+        for (const [workspace, ctgrs] of Object.entries(grouped)) {
+            console.log(ctgrs, 'ctgrs')
+            const formatted = Object.entries(ctgrs).map(([ctgrName, subCtgrs]) => {
+                return { [ctgrName]: subCtgrs }
+            })
+            result.push({ [workspace]: formatted });
+        }
+        console.log(result, 'restt')
+        if(result.length >= 0) {
+            const newResult = result.map(el => [el])
+            console.log(newResult)
+            return newResult 
+        }
+        // console.log(result)
+        return({result})
+    } catch (error) {
+        console.log(error)
     }
 }
-findWorkspace()
+findWorkspacedata()
 
-module.exports = { createPage, createFolder, findWorkspace }
+
+
+module.exports = { createPage, createFolder, findWorkspacedata }

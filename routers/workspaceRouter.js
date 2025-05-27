@@ -1,7 +1,7 @@
 const router = require('express').Router()
 const fs = require('fs');
 const { TeamProject } = require('../models/config');
-const { createFolder, createPage } = require('../controllers/workspace/workspace.controller');
+const { createFolder, createPage, findWorkspacedata } = require('../controllers/workspace/workspace.controller');
 
 router.post('/saveData', (req, res) => {
     const { data } = req.body;
@@ -34,6 +34,12 @@ router.get('/selectspace/:title', async (req, res) => {
     const {title} = req.params
     console.log('selectspace', title)
     res.json({state : 200, message : 'selectspace render'})
+})
+
+router.get('/workspacedata', async (req, res) => {
+    const data = await findWorkspacedata();
+    console.log(Array.isArray(data), data, 'true');
+    res.json({data})
 })
 
 module.exports = router;
