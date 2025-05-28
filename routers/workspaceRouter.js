@@ -35,7 +35,9 @@ router.post('/newPage', async (req, res) => {
 
 router.get('/selectspace/:workspacename/:foldername/:filename', async (req, res) => {
     const {workspacename,foldername,filename} = req.params
+    console.log(workspacename,foldername,filename, 'ppp')
     const {workspaceId} = await findworkspaceid(workspacename,foldername,filename)
+    console.log(workspaceId, 'ddddd')
     const PageData = await getpageData(workspaceId,filename)
     console.log(PageData)
     res.json({data : PageData})
@@ -46,6 +48,7 @@ router.post('/selectspace/:workspacename/:foldername/:filename', async (req, res
     const {data} = req.body;
     const Data = JSON.stringify(data)
     const {workspaceId} = await findworkspaceid(workspacename,foldername,filename)
+    console.log(workspaceId, 'ddddd')
     const savepageData = await savetextData(workspaceId,filename, Data)
     const PageData = await getpageData(workspaceId,filename)
     res.json({data : PageData})
@@ -59,7 +62,7 @@ router.get('/workspacedataOne', async (req, res) => {
 })
 router.get('/workspacedataTwo', async (req, res) => {
     const data = await findWorkspacedata( '팀 워크스페이스');
-    // console.log(data,'datatwo')
+    console.log(data,'datatwo')
     // console.log(data)
     // console.log(Array.isArray(data), data, 'true');
     res.json({data })
