@@ -35,7 +35,7 @@ class User extends Model {
           allowNull: true,
         },
         profImg: {
-          type: DataTypes.STRING(100),
+          type: DataTypes.STRING(500),
           allowNull: true,
         },
       },
