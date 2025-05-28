@@ -5,7 +5,7 @@ const { Post, Category, Comment, Heart } = require("../../models/config");
 const getAllPost = async () => {
   try {
     const data = await Category.findAll({
-      where: { depth: 1 },
+      where: { depth : [1, 2]},
       include: [
         {
           model: Post,
@@ -33,7 +33,7 @@ const getAllPost = async () => {
         {
           model: Category,
           as: "ParentCategory",
-          attributes: ["category_name"],
+          attributes: ["category_name", 'depth'],
         },
       ],
       order: [[{ model: Post }, "createdAt", "DESC"]],
@@ -110,6 +110,16 @@ const CreatePost = async ({
   videoPaths,
 }) => {
   try {
+    const category = await Category.findByPk(category_id);
+
+    if (!category) {
+      return { state: 404, message: "유효하지 않은 카테고리입니다." };
+    }
+
+    if (category.depth !== 2 && category.category_name !== '기타') {
+      return { state: 400, message: "게시글은 세부 카테고리에만 등록할 수 있습니다." };
+    }
+
     const data = await Post.create({
       post_id,
       uid,
@@ -119,11 +129,13 @@ const CreatePost = async ({
       imgPaths: JSON.stringify(imgPaths),
       videoPaths: JSON.stringify(videoPaths),
     });
+
     return { state: 200, message: "게시글 등록 성공!!!", data };
   } catch (error) {
     return { state: 484, message: "게시글 등록 실패!!!", error };
   }
 };
+
 
 // (async () => {
 //   const result = await CreatePost({
@@ -251,4 +263,4 @@ const getCommentCount = async (postId) => {
   }
 };
 
-module.exports = { getAllPost, getSubPost, getMyPost, getCommentCount };
+module.exports = { getAllPost, getSubPost, CreatePost, getMyPost, getCommentCount };
