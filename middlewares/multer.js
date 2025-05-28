@@ -11,11 +11,11 @@ exports.upload = multer({
       }
     },
     filename: (req, file, cb) => {
-      const ext = path.extname(file.originalname);
-
-      const basename = path.basename(file.originalname, ext);
-
-      cb(null, basename + "_" + Date.now() + ext);
+      const safeName = Buffer.from(file.originalname, "latin1").toString(
+        "utf8"
+      );
+      const parsed = path.parse(safeName);
+      cb(null, `${parsed.name}_${Date.now()}${parsed.ext}`);
     },
   }),
   limits: { fileSize: 100 * 1024 * 1024 },
