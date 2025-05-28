@@ -1,6 +1,7 @@
 const router = require("express").Router();
-// const {musicController} =require('../controllers');
+const { getMyPost } = require("../controllers/post/post.controller");
+const { auth } = require("../middlewares/authMiddleware");
 
-router.get("/", async (req, res) => {});
+router.get("/getMyPost", auth, getMyPost);
 
 module.exports = router;

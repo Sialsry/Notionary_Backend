@@ -2,13 +2,11 @@ require("dotenv").config();
 const db = require("./models/config");
 const cors = require("cors");
 const express = require("express");
-const socketIo = require("socket.io");
 const jwt = require("jsonwebtoken");
 const morgan = require("morgan");
 const fs = require("fs");
 const path = require("path");
 const axios = require("axios");
-const bcrypt = require("bcrypt");
 const cookieParser = require("cookie-parser");
 const app = express();
 
@@ -30,7 +28,6 @@ app.use(express.urlencoded({ extended: false }));
 app.use(morgan("dev"));
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 // app.use("/music", express.static(path.join(__dirname, "public/musics")));
-// app.use(loginCheck);
 
 app.use("/user", userRouter);
 app.use("/main", mainRouter);
