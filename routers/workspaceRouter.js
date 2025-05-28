@@ -1,7 +1,7 @@
 const router = require('express').Router()
 const fs = require('fs');
 const { TeamProject } = require('../models/config');
-const { createFolder, createPage, findWorkspacedata, savetextData, findworkspacedata, findworkspaceid, getpageData } = require('../controllers/workspace/workspace.controller');
+const { createFolder, createPage, findWorkspacedata, savetextData, findworkspacedata, findworkspaceid, getpageData, findWspaceContent } = require('../controllers/workspace/workspace.controller');
 const { json } = require('sequelize');
 
 router.post('/saveData', (req, res) => {
@@ -62,7 +62,11 @@ router.get('/workspacedataTwo', async (req, res) => {
     res.json({data })
 })
 
-
+router.get('/workspaceContent', async (req, res) => {
+    const {wname} = req.body;
+    const data = await findWspaceContent(wname)
+    res.json({data})
+})
 
 
 module.exports = router;
