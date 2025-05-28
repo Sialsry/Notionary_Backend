@@ -91,7 +91,8 @@ const findWorkspacedata = async (wname) => {
                 grouped[workspaceName] = {}
             }
             if (isParent) {
-                // grouped[workspaceName][item.workspacectgrs_name] = []
+                if (!grouped[workspaceName][item.workspacectgrs_name])
+                    grouped[workspaceName][item.workspacectgrs_name] = []
             }
             if (isChild) {
                 const parent = rawData.find(
@@ -101,18 +102,23 @@ const findWorkspacedata = async (wname) => {
                     // if (!grouped[workspaceName]) {
                     //     grouped[workspaceName] = {};
                     // }
-
-                    if (!grouped[workspaceName][parent.workspacectgrs_name]) {
-                        grouped[workspaceName][parent.workspacectgrs_name] = [];
-                    }
+                    // if (!grouped[workspaceName][parent.workspacectgrs_name]) {
+                    //     grouped[workspaceName][parent.workspacectgrs_name] = [];
+                    // }
                     // console.log(item.workspacesubctgrs_name,'23222')
-                    grouped[workspaceName][parent.workspacectgrs_name].push(item.workspacesubctgrs_name);
-
+                    console.log(parent, 'parent111111111', workspaceName, grouped)
+                    console.log(typeof grouped[workspaceName][parent.workspacectgrs_name])
+                    if (typeof grouped[workspaceName][parent.workspacectgrs_name] == "undefined"){
+                        console.log(typeof grouped[workspaceName][parent.workspacectgrs_name] == undefined)
+                        grouped[workspaceName][parent.workspacectgrs_name] = [item.workspacesubctgrs_name];
+                    }else {
+                        grouped[workspaceName][parent.workspacectgrs_name].push(item.workspacesubctgrs_name);
+                    }
                 }
                 // console.log(grouped, 'grouped123123')
             }
         }
-        // console.log(grouped, 'grouped3333')
+        console.log(grouped, 'grouped3333')
         for (const [workspace, ctgrs] of Object.entries(grouped)) {
             // console.log(ctgrs, 'ctgrs', workspace)
             const formatted = Object.entries(ctgrs).map(([ctgrName, subCtgrs]) => {
@@ -146,7 +152,7 @@ const findworkspaceid = async (workspacename, foldername, filename) => {
             workspacesubctgrs_name: filename
         }
     })
-
+    
     const workspaceId = data.dataValues.workspace_id
     // console.log(workspaceId, 'newdata')
     return { workspaceId }
@@ -170,7 +176,7 @@ const findWspaceContent = async (wname) => {
 const savetextData = async (workspaceId, filename, Data) => {
     try {
         try {
-            console.log(workspaceId, filename, Data,'zz')
+            console.log(workspaceId, filename, Data, 'zz')
 
             const data = await Page.create({
                 workspace_id: workspaceId,
@@ -180,30 +186,32 @@ const savetextData = async (workspaceId, filename, Data) => {
             return { state: 200, message: 'data created' }
         } catch (error) {
             const data = await Page.update({
-                page_content: Data},
-                {where: {
-                    workspace_id: workspaceId,
-                    Page_name: filename,
-                }
-            })
+                page_content: Data
+            },
+                {
+                    where: {
+                        workspace_id: workspaceId,
+                        Page_name: filename,
+                    }
+                })
             return { state: 200, message: 'data updated' }
         }
 
 
     } catch (error) {
-        return ({state : 401, message : error})
+        return ({ state: 401, message: error })
     }
 }
 
 
-const getpageData = async (workspaceId,filename ) => {
+const getpageData = async (workspaceId, filename) => {
     const data = await Page.findOne({
-        where : {
-            workspace_id : workspaceId,
-            Page_name : filename
+        where: {
+            workspace_id: workspaceId,
+            Page_name: filename
         }
     })
-    return {PageData : data.dataValues}
+    return { PageData: data?.dataValues }
 }
 
-module.exports = {savetextData, getpageData, createPage, createFolder, findWorkspacedata, findWspaceContent, findworkspaceid }
+module.exports = { savetextData, getpageData, createPage, createFolder, findWorkspacedata, findWspaceContent, findworkspaceid }
