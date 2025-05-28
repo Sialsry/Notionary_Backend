@@ -5,8 +5,10 @@ const mypageRouter = require("./mypageRouter");
 const myprojectRouter = require("./myprojectRouter");
 const teamprojectRouter = require("./teamprojectRouter");
 const authRouter = require("./authRouter");
+const workspaceRouter = require("./workspaceRouter")
 
 module.exports = {
+  workspaceRouter,
   mainRouter,
   postRouter,
   userRouter,
