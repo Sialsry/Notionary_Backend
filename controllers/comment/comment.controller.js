@@ -32,7 +32,7 @@ const getAllComment = async (post_id) => {
         }
       ]
     });
-    console.log('댓글 조회 결과:', data);
+    // console.log('댓글 조회 결과:', data);
     return { state: 200, message: "댓글 조회 성공", data };
   } catch (error) {
     return { state: 500, message: "댓글 조회 실패", error };

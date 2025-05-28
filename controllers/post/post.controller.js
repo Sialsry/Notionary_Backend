@@ -1,4 +1,4 @@
-const { Post, Category, Comment} = require('../../models/config');
+const { Post, Category, Comment, Heart} = require('../../models/config');
 
 
 // 일단 전체 카테고리에 대한 게시글 조회 함수수
@@ -7,28 +7,32 @@ const getAllPost = async () => {
     const data = await Category.findAll({
       where: { depth: 1 },
       include: [
-      {
-        model: Post,
-        attributes: ['post_id', 'uid','category_id', 'title', 'imgPaths', 'videoPaths', 'content', 'createdAt'],
-        include: [
-          {
-            model: Comment,
-            attributes: ['uid', 'post_id', 'content', 'createdAt'],
-          },
-        ],
-      },
-      {
-        model: Category,
-        as: 'ParentCategory',
-        attributes: ['category_name'],
-      },
-    ],
-       order: [[{ model: Post }, 'createdAt', 'DESC']],
+        {
+          model: Post,
+          attributes: ['post_id', 'uid', 'category_id', 'title', 'imgPaths', 'videoPaths', 'content', 'createdAt'],
+          include: [
+            {
+              model: Comment,
+              attributes: ['uid', 'post_id', 'content', 'createdAt'],
+            },
+            {
+              model: Heart,
+              attributes: ['uid'],
+            },
+          ],
+        },
+        {
+          model: Category,
+          as: 'ParentCategory',
+          attributes: ['category_name'],
+        },
+      ],
+      order: [[{ model: Post }, 'createdAt', 'DESC']],
     });
+
     const fixdata = data.map(category => category.toJSON());
 
-    // console.log(fixdata);
-    return { state: 200, message: '전체 게시글 조회 성공', data : fixdata};
+    return { state: 200, message: '전체 게시글 조회 성공', data: fixdata };
   } catch (error) {
     return { state: 404, message: '전체 게시글 조회 실패', error };
   }
