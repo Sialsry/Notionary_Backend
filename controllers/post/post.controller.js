@@ -251,4 +251,10 @@ const getCommentCount = async (postId) => {
   }
 };
 
-module.exports = { getAllPost, getSubPost, getMyPost, getCommentCount };
+module.exports = {
+  getAllPost,
+  getSubPost,
+  CreatePost,
+  getMyPost,
+  getCommentCount,
+};
