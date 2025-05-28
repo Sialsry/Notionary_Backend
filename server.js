@@ -2,14 +2,11 @@ require("dotenv").config();
 const db = require("./models/config");
 const cors = require("cors");
 const express = require("express");
-const socketIo = require("socket.io");
 const jwt = require("jsonwebtoken");
 const morgan = require("morgan");
 const fs = require("fs");
 const path = require("path");
 const axios = require("axios");
-const bcrypt = require("bcrypt");
-const { loginCheck } = require("./middlewares/authMiddleware");
 const cookieParser = require("cookie-parser");
 const app = express();
 
@@ -23,6 +20,8 @@ const {
   myprojectRouter,
   teamprojectRouter,
   authRouter,
+  workspaceRouter,
+  
 } = require("./routers");
 
 app.use(cors({ origin: "http://localhost:3000", credentials: true }));
@@ -30,9 +29,8 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.urlencoded({ extended: false }));
 app.use(morgan("dev"));
-// app.use("/public", express.static(path.join(__dirname, "public")));
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 // app.use("/music", express.static(path.join(__dirname, "public/musics")));
-// app.use(loginCheck);
 
 app.use("/user", userRouter);
 app.use("/main", mainRouter);
@@ -41,6 +39,8 @@ app.use("/mypage", mypageRouter);
 app.use("/myproject", myprojectRouter);
 app.use("/teamproject", teamprojectRouter);
 app.use("/api/auth", authRouter);
+app.use("/workspace", workspaceRouter)
+
 
 app.get("/", (req, res) => {
   res.send("Notionary API is running");
