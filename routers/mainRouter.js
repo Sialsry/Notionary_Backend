@@ -1,5 +1,6 @@
 const { getAllCategory, getSubCategory } = require("../controllers/category/category.controller");
 const { CreateComment, getAllComment } = require("../controllers/comment/comment.controller");
+const { CreateHeart } = require("../controllers/heart/heart.controller");
 const { getAllPost, getSubPost } = require("../controllers/post/post.controller");
 
 const router = require("express").Router();
@@ -47,6 +48,12 @@ router.get('/comment/:post_id', async (req, res) => {
     res.json(data);
 })
 
+// 게시글 좋아요 추가 라우팅
+router.post('/heart', async(req, res) => {
+    const {uid, post_id} = req.body;
+    const data = await CreateHeart({uid, post_id})
+    res.json(data);
+})
 
 
 // // 세부 카테고리 조회 라우팅
