@@ -95,11 +95,6 @@ const getSubPost = async (categoryName, subCategory) => {
   }
 };
 
-// (async () => {
-//     const result = await getSubPost('기타');
-//     console.log('getSubPost 결과:', result);
-// })();
-
 const CreatePost = async ({
   post_id,
   uid,
@@ -124,36 +119,6 @@ const CreatePost = async ({
     return { state: 484, message: "게시글 등록 실패!!!", error };
   }
 };
-
-// (async () => {
-//   const result = await CreatePost({
-//     post_id : "1",
-//     uid: 'user1',
-//     category_id: 1,
-//     title: '게시글 등록 첫번째',
-//     content: '게시글 내용ㅎㅎㅎㅎㅎㅎㅎㅎㅎㅎㅎㅎㅎ',
-//     imgPaths: ['img1.jpg', 'img2.jpg'],
-//     videoPaths: ['video1.mp4', 'video02.mp4']
-//   });
-//   console.log('CreatePost 결과:', result);
-// })();
-
-// const getCategoryName = async (category_id) => {
-//   try {
-//     const category = await Category.findOne({
-//       where: { category_id },
-//       attributes: ["category_name"],
-//     });
-
-//     if (!category) {
-//       return { state: 404, message: "카테고리를 찾을 수 없습니다." };
-//     }
-
-//     return { state: 200, message: "카테고리 조회 성공", data: category };
-//   } catch (error) {
-//     return { state: 500, message: "카테고리 조회 실패", error };
-//   }
-// }
 
 const getMyPost = async (req, res) => {
   try {
@@ -233,28 +198,9 @@ const getMyPost = async (req, res) => {
   }
 };
 
-// 특정 게시글의 댓글 개수 조회
-const getCommentCount = async (postId) => {
-  try {
-    const count = await Post.count({
-      where: { post_id: postId },
-      attributes: [
-        [
-          sequelize.fn("COUNT", sequelize.col("comments.comment_id")),
-          "commentCount",
-        ],
-      ],
-    });
-    return { state: 200, message: "댓글 개수 조회 성공", count };
-  } catch (error) {
-    return { state: 404, message: "댓글 개수 조회 실패", error };
-  }
-};
-
 module.exports = {
   getAllPost,
   getSubPost,
   CreatePost,
   getMyPost,
-  getCommentCount,
 };
