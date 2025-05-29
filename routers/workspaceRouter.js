@@ -13,7 +13,7 @@ router.post('/newFolder', async (req, res) => {
     try {
         const { data } = req.body;
         console.log(data,'newFolder')
-        const { Data } = await createFolder(data);
+        const { Data } = await createFolder({Data : data});
         console.log('successful' , Data)
         res.json({data : Data})
     } catch (error) {
