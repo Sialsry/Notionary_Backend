@@ -1,5 +1,4 @@
-const { sequelize } = require("../../models/config");
-const { Post, Category, Comment, Heart } = require("../../models/config");
+const { Post, Category, Comment, Heart,  User } = require("../../models/config");
 
 // 일단 전체 카테고리에 대한 게시글 조회 함수
 const getAllPost = async () => {
@@ -20,6 +19,10 @@ const getAllPost = async () => {
             "createdAt",
           ],
           include: [
+            {
+              model : User,
+              attributes: ["nick", 'profImg']
+            },
             {
               model: Comment,
               attributes: ["uid", "post_id", "content", "createdAt"],
@@ -73,32 +76,101 @@ const getSubPost = async (categoryName, subCategory) => {
             "content",
             "createdAt",
           ],
-          order: [["createdAt", "DESC"]],
+          include: [
+            {
+              model: User,
+              attributes: ["nick", "profImg"],
+            },
+            {
+              model: Comment,
+              attributes: ["uid", "post_id", "content", "createdAt"],
+            },
+            {
+              model: Heart,
+              attributes: ["uid"],
+            },
+          ],
         },
         {
           model: Category,
           as: "ParentCategory",
-          attributes: ["category_name"],
+          attributes: ["category_name", "depth"],
           where: categoryName ? { category_name: categoryName } : {},
         },
       ],
       order: [[{ model: Post }, "createdAt", "DESC"]],
     });
-    const fixdata = data.map((el) => el.toJSON());
-    return {
-      state: 200,
-      message: "세부 카테고리 게시글 조회 성공!!!",
-      data: fixdata,
-    };
+
+    const fixdata = data.map((category) => category.toJSON());
+
+    return { state: 200, message: "세부 카테고리 게시글 조회 성공!!!", data: fixdata };
   } catch (error) {
     return { state: 484, message: "세부 카테고리 게시글 조회 실패!!", error };
   }
 };
 
 // (async () => {
-//     const result = await getSubPost('기타');
-//     console.log('getSubPost 결과:', result);
+// const result = await getSubPost();
+//  console.dir(result, { depth: null });
 // })();
+
+
+// 기타 게시글 조회 함수
+const getEtcPost = async () => {
+  try {
+    const data = await Category.findAll({
+      where: { category_id: 6 },
+      include: [
+        {
+          model: Post,
+          attributes: [
+            "post_id",
+            "uid",
+            "category_id",
+            "title",
+            "imgPaths",
+            "videoPaths",
+            "content",
+            "createdAt",
+          ],
+          include: [
+            {
+              model: User,
+              attributes: ["nick", "profImg"],
+            },
+            {
+              model: Comment,
+              attributes: ["uid", "post_id", "content", "createdAt"],
+            },
+            {
+              model: Heart,
+              attributes: ["uid"],
+            },
+          ],
+        },
+        {
+          model: Category,
+          as: "ParentCategory",
+          attributes: ["category_name", "depth"],
+        },
+      ],
+      order: [[{ model: Post }, "createdAt", "DESC"]],
+    });
+
+    const fixdata = data.map((post) => post.toJSON());
+
+    return { state: 200, message: "기타 카테고리 게시글 조회 성공", data: fixdata };
+  } catch (error) {
+    return { state: 404, message: "기타 카테고리 게시글 조회 실패", error };
+  }
+};
+
+
+// (async () => {
+//   const result = await getEtcPost();
+//   console.dir(result, { depth: null });
+// })();
+
 
 const CreatePost = async ({
   post_id,
@@ -263,4 +335,4 @@ const getCommentCount = async (postId) => {
   }
 };
 
-module.exports = { getAllPost, getSubPost, CreatePost, getMyPost, getCommentCount };
+module.exports = { getAllPost, getSubPost, getEtcPost, CreatePost, getMyPost, getCommentCount };
