@@ -4,7 +4,6 @@ const userRouter = require("./userRouter");
 const mypageRouter = require("./mypageRouter");
 const myprojectRouter = require("./myprojectRouter");
 const teamprojectRouter = require("./teamprojectRouter");
-const loginCheck = require("../middlewares/middleware");
 const authRouter = require("./authRouter");
 const workspaceRouter = require("./workspaceRouter")
 
@@ -16,6 +15,5 @@ module.exports = {
   mypageRouter,
   myprojectRouter,
   teamprojectRouter,
-  loginCheck,
   authRouter,
 };
