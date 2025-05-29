@@ -62,7 +62,7 @@ myproject.associate(db);
 teamproject.associate(db);
 
 sequelize
-  .sync({ force: true })
+  .sync({ force: false })
   .then(() => {
     console.log("시퀄라이즈 연결 성공");
   })
