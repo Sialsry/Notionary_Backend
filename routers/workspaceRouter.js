@@ -3,7 +3,7 @@ const fs = require('fs');
 const { TeamProject } = require('../models/config');
 const { createFolder, createPage, findWorkspacedata, savetextData, findworkspacedata, findworkspaceid, getpageData, findWspaceContent } = require('../controllers/workspace/workspace.controller');
 const { json } = require('sequelize');
-
+const {upload} = require('../middlewares/multer')
 router.post('/saveData', (req, res) => {
     const { data } = req.body;
     res.json({ message: 'done' })
@@ -37,7 +37,6 @@ router.get('/selectspace/:workspacename/:foldername/:filename', async (req, res)
     const {workspacename,foldername,filename} = req.params
     console.log(workspacename,foldername,filename, 'ppp')
     const {workspaceId} = await findworkspaceid(workspacename,foldername,filename)
-    console.log(workspaceId, 'ddddd')
     const PageData = await getpageData(workspaceId,filename)
     console.log(PageData)
     res.json({data : PageData})
@@ -46,11 +45,24 @@ router.get('/selectspace/:workspacename/:foldername/:filename', async (req, res)
 router.post('/selectspace/:workspacename/:foldername/:filename', async (req, res) => {
     const {workspacename,foldername,filename} = req.params
     const {data} = req.body;
+    console.log(data, 'imagepath', data)
     const Data = JSON.stringify(data)
     const {workspaceId} = await findworkspaceid(workspacename,foldername,filename)
     console.log(workspaceId, 'ddddd')
     const savepageData = await savetextData(workspaceId,filename, Data)
     const PageData = await getpageData(workspaceId,filename)
+    res.json({data : PageData})
+})
+
+router.post('/selectspace/:workspacename/:foldername/:_filename/image/:id',upload.single('imgpath'), async (req, res) => {
+    const {workspacename,foldername,_filename, id} = req.params
+    const {data} = req.body;
+    const {filename} = req.file;
+    const Data = JSON.parse(data)
+    const datas = Data.map((el) => { if (el.id == id) el.content = `http://localhost:4000/images/${filename}`; return el })
+    const {workspaceId} = await findworkspaceid(workspacename,foldername,_filename)
+    const savepageData = await savetextData(workspaceId,_filename, JSON.stringify(datas))
+    const PageData = await getpageData(workspaceId,_filename)
     res.json({data : PageData})
 })
 

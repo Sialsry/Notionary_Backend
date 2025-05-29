@@ -1,6 +1,5 @@
 const { Model, DataTypes } = require("sequelize");
 
-// 필드값 : category_id, category_name
 class Category extends Model {
   static init(sequelize) {
     return super.init(
@@ -14,10 +13,14 @@ class Category extends Model {
           type: DataTypes.STRING(20),
           allowNull: false,
         },
-        depth : {
-          type : DataTypes.INTEGER,
-          allowNull : false,
-          defaultValue : 1
+        depth: {
+          type: DataTypes.INTEGER,
+          allowNull: false,
+          defaultValue: 1,
+        },
+        category_id_fk: {
+          type: DataTypes.INTEGER,
+          allowNull: true,
         },
       },
       {
@@ -28,19 +31,25 @@ class Category extends Model {
       }
     );
   }
+
   static associate(db) {
     db.Category.hasMany(db.Post, {
       foreignKey: "category_id",
       sourceKey: "category_id",
     });
-    db.Category.hasOne(db.Category, {
-      foreignKey : "category_id_fk",
-      as : "SubCategory",
-      sourceKey : "category_id"
+
+
+    db.Category.hasMany(db.Category, {
+      foreignKey: "category_id_fk",
+      as: "SubCategories",
     });
-  }
+
+
+    db.Category.belongsTo(db.Category, {
+      foreignKey: "category_id_fk",
+      as: "ParentCategory",
+    });
+}
 }
 
 module.exports = Category;
-
-//
