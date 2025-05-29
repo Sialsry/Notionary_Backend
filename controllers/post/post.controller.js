@@ -185,12 +185,21 @@ const getMyPost = async (req, res) => {
     // created_at: "2023-10-01",
     //   }
 
+    //imgPaths: '["http://localhost:4000/images/KakaoTalk_20211205_190958621_1748479502876.png"]'
+    //imgPaths: "http://localhost:4000/images/KakaoTalk_20211205_190958621_1748479502876.png" 이렇게 되도록
+
     formattedData.forEach((post) => {
       post.category_name = post.Category.category_name; // 카테고리 이름 추가
       post.comments = post.Comments ? post.Comments.length : 0; // 댓글 개수 추가
       delete post.Category; // 불필요한 Category 필드 제거
-      post.imgPaths = post.imgPaths ? post.imgPaths.split(",") : []; // 이미지 경로 배열로 변환
-      post.created_at = post.createdAt.toISOString().split("T")[0]; // 날짜 형식 변환
+      post.imgPaths = JSON.parse(post.imgPaths)
+        ? JSON.parse(post.imgPaths)[0] // JSON 문자열을 배열로 변환
+        : "http://localhost:4000/images/default/default_profile.png"; // imgPaths가 없으면 빈 배열로 설정
+      post.createdAt = new Date(post.createdAt).toLocaleDateString("ko-KR", {
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+      }); // 날짜 형식 변환
       post.hearts = post.Hearts ? post.Hearts.length : 0; // 좋아요 개수 추가
       delete post.Hearts; // 불필요한 Hearts 필드 제거
     });
