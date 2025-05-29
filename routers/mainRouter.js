@@ -1,4 +1,6 @@
 const { getAllCategory, getSubCategory } = require("../controllers/category/category.controller");
+const { CreateComment, getAllComment } = require("../controllers/comment/comment.controller");
+const { CreateHeart } = require("../controllers/heart/heart.controller");
 const { getAllPost, getSubPost } = require("../controllers/post/post.controller");
 
 const router = require("express").Router();
@@ -27,6 +29,29 @@ router.post('/subpost', async(req, res) => {
 router.get('/category', async(req, res) => {
     const data = await getAllCategory();
     console.log(data);
+    res.json(data);
+})
+
+// 댓글 추가 라우팅
+router.post('/comment', async(req, res) => {
+    const { uid, post_id, category_id,  content } = req.body;
+    // console.log("찍히냐고",uid, post_id, category_id,  content);
+    const data = await CreateComment({ uid, post_id, category_id, content })
+    res.json(data);
+})
+
+// 게시글 댓글 조회 라우팅팅
+router.get('/comment/:post_id', async (req, res) => {
+    const { post_id } = req.params;
+    console.log(post_id)
+    const data = await getAllComment(post_id);
+    res.json(data);
+})
+
+// 게시글 좋아요 추가 라우팅
+router.post('/heart', async(req, res) => {
+    const {uid, post_id} = req.body;
+    const data = await CreateHeart({uid, post_id})
     res.json(data);
 })
 

@@ -23,8 +23,12 @@ class Post extends Model {
           allowNull: false,
         },
         imgPaths: {
-          type: DataTypes.STRING(100),
+          type: DataTypes.STRING(1000),
           allowNull: false,
+        },
+        videoPaths : {
+          type : DataTypes.STRING(1000),
+          allowNull : false,
         },
         content: {
           type: DataTypes.STRING(200),
