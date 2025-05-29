@@ -1,7 +1,7 @@
 const { getAllCategory, getSubCategory } = require("../controllers/category/category.controller");
 const { CreateComment, getAllComment } = require("../controllers/comment/comment.controller");
-const { CreateHeart } = require("../controllers/heart/heart.controller");
-const { getAllPost, getSubPost } = require("../controllers/post/post.controller");
+const { CreateHeart, DeleteHeart } = require("../controllers/heart/heart.controller");
+const { getAllPost, getSubPost, getEtcPost } = require("../controllers/post/post.controller");
 
 const router = require("express").Router();
 const axios = require("axios");
@@ -24,7 +24,11 @@ router.post('/subpost', async(req, res) => {
     res.json(data);
 })
 
-
+// 기타 카테고리 게시글 조회 라우팅
+router.get("/etc", async (req, res) => {
+  const data = await getEtcPost();
+  res.json(data);
+});
 // 전체 카테고리 조회 라우팅
 router.get('/category', async(req, res) => {
     const data = await getAllCategory();
@@ -40,6 +44,7 @@ router.post('/comment', async(req, res) => {
     res.json(data);
 })
 
+
 // 게시글 댓글 조회 라우팅팅
 router.get('/comment/:post_id', async (req, res) => {
     const { post_id } = req.params;
@@ -50,11 +55,19 @@ router.get('/comment/:post_id', async (req, res) => {
 
 // 게시글 좋아요 추가 라우팅
 router.post('/heart', async(req, res) => {
+    console.log("좋아요 추가 및 조회", req.body)
     const {uid, post_id} = req.body;
     const data = await CreateHeart({uid, post_id})
     res.json(data);
 })
 
+// 게시글 좋아요 취소 라우팅
+router.delete('/heartDelete', async (req, res) => {
+    console.log('요청 바디', req.body);
+    const {uid, post_id} = req.body;
+    const data = await DeleteHeart({uid, post_id})
+    res.json(data);
+})
 
 // // 세부 카테고리 조회 라우팅
 // router.get('/category/:id', async (req, res) => {
