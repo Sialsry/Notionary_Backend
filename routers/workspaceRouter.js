@@ -37,16 +37,17 @@ router.get('/selectspace/:workspacename/:foldername/:filename', async (req, res)
     const {workspacename,foldername,filename} = req.params
     console.log(workspacename,foldername,filename, 'ppp')
     const {workspaceId} = await findworkspaceid(workspacename,foldername,filename)
-    console.log(workspaceId, 'ddddd')
     const PageData = await getpageData(workspaceId,filename)
     console.log(PageData)
     res.json({data : PageData})
 })
 
-router.post('/selectspace/:workspacename/:foldername/:filename', async (req, res) => {
+router.post('/selectspace/:workspacename/:foldername/:filename',upload.single('imagepath'), async (req, res) => {
     const {workspacename,foldername,filename} = req.params
     const {data} = req.body;
     const Data = JSON.stringify(data)
+    const {path} = req.file;
+    console.log(path, 'imagepath')
     const {workspaceId} = await findworkspaceid(workspacename,foldername,filename)
     console.log(workspaceId, 'ddddd')
     const savepageData = await savetextData(workspaceId,filename, Data)
