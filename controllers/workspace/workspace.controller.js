@@ -4,7 +4,7 @@ const { Workspace, Workspacectgrs, Page } = require("../../models/config")
 
 
 
-const createFolder = async ({ data }) => {
+const createFolder = async ({ Data }) => {
     // console.log(data, 'createfolder')
     try {
         // for (const workspace of data) {
@@ -24,18 +24,19 @@ const createFolder = async ({ data }) => {
         //         return ({ state: 200, message: 'createfolder successful' })
         //     }
         // }
-        const { workSpace, folderName } = data;
-        await Workspacectgrs.create({
+        const { workSpace, folderName } = Data.data;
+        console.log(workSpace, folderName, 'Data')
+        const  data = await Workspacectgrs.create({
             uid: '4272178176',
             workspace_name: workSpace,
             workspacectgrs_name: folderName,
             depth: 1
         })
-
+        console.log(data, 'data111')
         return { state: 200, message: 'success' }
     } catch (error) {
-        return { state: 401, message: error }
         console.log(error)
+        return { state: 401, message: error }
     }
 }
 
@@ -152,10 +153,15 @@ const findworkspaceid = async (workspacename, foldername, filename) => {
             workspacesubctgrs_name: filename
         }
     })
-    
-    const workspaceId = data.dataValues.workspace_id
-    // console.log(workspaceId, 'newdata')
-    return { workspaceId }
+    if(data) {
+        
+        const workspaceId = data.dataValues.workspace_id
+        // console.log(workspaceId, 'newdata')
+        return { workspaceId }
+    }
+    else {
+        return null
+    }
 }
 
 const findWspaceContent = async (wname) => {
