@@ -21,12 +21,12 @@ const {
   teamprojectRouter,
   authRouter,
   workspaceRouter,
-  
+  detailRouter,
 } = require("./routers");
 
 app.use(cors({ origin: "http://localhost:3000", credentials: true }));
 app.use(express.json());
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, "public")));
 app.use(express.urlencoded({ extended: false }));
 app.use(morgan("dev"));
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
@@ -39,8 +39,8 @@ app.use("/mypage", mypageRouter);
 app.use("/myproject", myprojectRouter);
 app.use("/teamproject", teamprojectRouter);
 app.use("/api/auth", authRouter);
-app.use("/workspace", workspaceRouter)
-
+app.use("/workspace", workspaceRouter);
+app.use("/detail", detailRouter);
 
 app.get("/", (req, res) => {
   res.send("Notionary API is running");

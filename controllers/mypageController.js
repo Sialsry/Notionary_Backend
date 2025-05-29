@@ -1,5 +1,4 @@
 const { User, Post, Heart, Comment, Category } = require("../models/config");
-const { Op } = require("sequelize");
 const sequelize = require("sequelize");
 
 // 좋아요 누른 게시글 목록 조회
@@ -14,13 +13,15 @@ exports.getLikedPosts = async (req, res) => {
       `📖 좋아요 누른 게시글 조회 - UID: ${uid}, Page: ${page}, Limit: ${limit}`
     );
 
-    // 좋아요 누른 게시글들을 조회 (JOIN을 통해 필요한 모든 정보 가져오기)
     const { count, rows: likedPosts } = await Heart.findAndCountAll({
       where: { uid },
       include: [
         {
           model: Post,
           required: true,
+          where: {
+            uid: { [sequelize.Op.ne]: uid }, // ✅ 내가 작성한 글 제외
+          },
           include: [
             {
               model: User,
@@ -32,25 +33,13 @@ exports.getLikedPosts = async (req, res) => {
               attributes: ["category_name"],
               required: true,
             },
-            {
-              model: Heart,
-              attributes: [],
-              required: false,
-            },
-            {
-              model: Comment,
-              attributes: [],
-              required: false,
-            },
           ],
-          // 좋아요 수와 댓글 수를 서브쿼리로 계산
           attributes: [
             "post_id",
             "title",
             "content",
             "imgPaths",
             "createdAt",
-            // 좋아요 수 계산
             [
               sequelize.literal(`(
                 SELECT COUNT(*)
@@ -59,7 +48,6 @@ exports.getLikedPosts = async (req, res) => {
               )`),
               "hearts",
             ],
-            // 댓글 수 계산
             [
               sequelize.literal(`(
                 SELECT COUNT(*)
@@ -71,10 +59,10 @@ exports.getLikedPosts = async (req, res) => {
           ],
         },
       ],
-      order: [["createdAt", "DESC"]], // 최근 좋아요 순으로 정렬
+      order: [["Post", "createdAt", "DESC"]], // ✅ Heart.createdAt → Post.createdAt로 변경
       limit,
       offset,
-      distinct: true, // 중복 제거
+      distinct: true,
     });
 
     // 데이터 가공
@@ -84,23 +72,33 @@ exports.getLikedPosts = async (req, res) => {
       // 첫 번째 이미지 추출 (콤마로 구분된 경우)
       let firstImage = null;
       if (post.imgPaths && post.imgPaths.trim() !== "") {
-        const images = post.imgPaths
-          .split(",")
-          .map((img) => img.trim())
-          .filter((img) => img);
-        firstImage = images.length > 0 ? images[0] : null;
+        try {
+          // JSON 문자열을 파싱
+          const parsedImages = JSON.parse(post.imgPaths);
 
-        // 상대 경로인 경우 절대 URL로 변환
-        if (firstImage && !firstImage.startsWith("http")) {
-          firstImage = `http://localhost:4000/uploads/posts/${firstImage}`;
+          // 배열이고 요소가 있으면 첫 번째 이미지 선택
+          if (Array.isArray(parsedImages) && parsedImages.length > 0) {
+            firstImage = parsedImages[0];
+          } else {
+            firstImage =
+              "http://localhost:4000/images/default/default_profile.png"; // 기본 썸네일 이미지
+          }
+        } catch (error) {
+          // JSON 파싱 실패 시 콤마로 구분된 문자열로 처리
+          console.log("JSON 파싱 실패, 콤마 구분 처리:", post.imgPaths);
+          const images = post.imgPaths
+            .split(",")
+            .map((img) => img.trim())
+            .filter((img) => img);
+          firstImage = images.length > 0 ? images[0] : null;
         }
       }
 
       // 작성자 프로필 이미지 처리
       let authorProfileImg = post.User.profImg;
-      if (authorProfileImg && !authorProfileImg.startsWith("http")) {
-        authorProfileImg = `http://localhost:4000/uploads/profile/${authorProfileImg}`;
-      }
+      //   if (authorProfileImg && !authorProfileImg.startsWith("http")) {
+      //     authorProfileImg = `http://localhost:4000/uploads/profile/${authorProfileImg}`;
+      //   }
 
       // 작성일 포맷팅
       const createdAt = new Date(post.createdAt).toLocaleDateString("ko-KR", {
@@ -108,6 +106,8 @@ exports.getLikedPosts = async (req, res) => {
         month: "short",
         day: "numeric",
       });
+
+      console.log("썸네일 이미지", firstImage);
 
       return {
         post_id: post.post_id,
@@ -174,6 +174,9 @@ exports.getCommentedPosts = async (req, res) => {
         {
           model: Post,
           required: true,
+          where: {
+            uid: { [sequelize.Op.ne]: uid }, // ✅ 내가 작성한 글 제외
+          },
           include: [
             {
               model: User,
@@ -213,9 +216,27 @@ exports.getCommentedPosts = async (req, res) => {
           ],
         },
       ],
-      attributes: ["createdAt"], // 댓글 작성일
-      order: [["createdAt", "DESC"]],
-      group: ["Post.post_id"], // 게시글별로 그룹핑하여 중복 제거
+      attributes: [
+        [
+          sequelize.fn("MAX", sequelize.col("Comment.createdAt")),
+          "latestCommentDate",
+        ], // ✅ 집계함수 사용
+      ],
+      group: [
+        "Post.post_id",
+        "Post.title",
+        "Post.content",
+        "Post.imgPaths",
+        "Post.createdAt",
+        "Post.uid",
+        "Post.category_id",
+        "Post->User.uid",
+        "Post->User.nick",
+        "Post->User.profImg",
+        "Post->Category.category_id",
+        "Post->Category.category_name",
+      ], // ✅ 모든 선택된 컬럼을 GROUP BY에 포함
+      order: [["latestCommentDate", "DESC"]], // ✅ 집계된 컬럼으로 정렬
       limit,
       offset,
       distinct: true,
@@ -228,22 +249,36 @@ exports.getCommentedPosts = async (req, res) => {
       // 첫 번째 이미지 추출
       let firstImage = null;
       if (post.imgPaths && post.imgPaths.trim() !== "") {
-        const images = post.imgPaths
-          .split(",")
-          .map((img) => img.trim())
-          .filter((img) => img);
-        firstImage = images.length > 0 ? images[0] : null;
+        try {
+          // JSON 문자열을 파싱
+          const parsedImages = JSON.parse(post.imgPaths);
 
-        if (firstImage && !firstImage.startsWith("http")) {
-          firstImage = `http://localhost:4000/uploads/posts/${firstImage}`;
+          // 배열이고 요소가 있으면 첫 번째 이미지 선택
+          if (Array.isArray(parsedImages) && parsedImages.length > 0) {
+            firstImage = parsedImages[0];
+          } else {
+            firstImage =
+              "http://localhost:4000/images/default/default_profile.png"; // 기본 썸네일 이미지
+          }
+        } catch (error) {
+          // JSON 파싱 실패 시 콤마로 구분된 문자열로 처리
+          console.log("JSON 파싱 실패, 콤마 구분 처리:", post.imgPaths);
+          const images = post.imgPaths
+            .split(",")
+            .map((img) => img.trim())
+            .filter((img) => img);
+          firstImage = images.length > 0 ? images[0] : null;
         }
       }
 
       // 작성자 프로필 이미지 처리
       let authorProfileImg = post.User.profImg;
-      if (authorProfileImg && !authorProfileImg.startsWith("http")) {
-        authorProfileImg = `http://localhost:4000/uploads/profile/${authorProfileImg}`;
-      }
+      //   if (authorProfileImg && !authorProfileImg.startsWith("http")) {
+      //     authorProfileImg = `http://localhost:4000/uploads/profile/${authorProfileImg}`;
+      //   } else {
+      //     authorProfileImg =
+      //       "http://localhost:4000/images/default/default_profile.png"; // 기본 프로필 이미지
+      //   }
 
       // 게시글 작성일 포맷팅
       const createdAt = new Date(post.createdAt).toLocaleDateString("ko-KR", {
@@ -251,6 +286,8 @@ exports.getCommentedPosts = async (req, res) => {
         month: "short",
         day: "numeric",
       });
+
+      //   console.log("썸네일 이미지", firstImage);
 
       return {
         post_id: post.post_id,
