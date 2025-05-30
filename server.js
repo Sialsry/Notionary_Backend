@@ -21,12 +21,13 @@ const {
   teamprojectRouter,
   authRouter,
   workspaceRouter,
-  
+  detailRouter,
 } = require("./routers");
+const { getCookie } = require("./middlewares/Cookie.middleware");
 
 app.use(cors({ origin: "http://localhost:3000", credentials: true }));
 app.use(express.json());
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, "public")));
 app.use(express.urlencoded({ extended: false }));
 app.use(morgan("dev"));
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
@@ -40,10 +41,13 @@ app.use("/mypage", mypageRouter);
 app.use("/myproject", myprojectRouter);
 app.use("/teamproject", teamprojectRouter);
 app.use("/api/auth", authRouter);
-app.use("/workspace", workspaceRouter)
+app.use("/workspace", workspaceRouter);
+app.use("/detail", detailRouter);
 
 
 app.get("/", (req, res) => {
+  console.log("cookie11111");
+  // getCookie(req, res, next);
   res.send("Notionary API is running");
 });
 
@@ -93,11 +97,11 @@ app.get("/auth/kakao/callback", async (req, res) => {
   }
 
   const token = jwt.sign({ uid: id }, process.env.JWT_SECRET, {
-    expiresIn: "1h",
+    expiresIn: "24h",
   });
   res.cookie("login_access_token", token, {
     httpOnly: false,
-    maxAge: 60 * 60 * 60 * 1000,
+    maxAge: 120 * 60 * 60 * 1000,
   });
   res.redirect("http://localhost:3000/main");
 });
