@@ -59,6 +59,8 @@ class Workspacectgrs extends Model {
       as: 'subCategories',
       foreignKey: 'fk_workspace_id',
       sourceKey: 'workspace_id',
+      onDelete: 'CASCADE',
+      onUpdate : 'CASCADE'
     });
     // this.hasMany(db.Workspacectgrs, {
     //   as: 'subCategories',

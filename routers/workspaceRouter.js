@@ -10,6 +10,7 @@ const {
   findworkspaceid,
   getpageData,
   findWspaceContent,
+  DestroyWorkspace,
 } = require("../controllers/workspace/workspace.controller");
 const { json } = require("sequelize");
 const { upload } = require("../middlewares/multer");
@@ -18,6 +19,7 @@ router.post("/saveData", (req, res) => {
   res.json({ message: "done" });
 });
 const { auth } = require("../middlewares/authMiddleware");
+const { error } = require("console");
 
 router.post("/newFolder", auth, async (req, res) => {
   try {
@@ -122,5 +124,13 @@ router.get("/workspaceContent", auth, async (req, res) => {
   const data = await findWspaceContent(wname, req.user.uid);
   res.json({ data });
 });
+
+router.post("/delworkspace", auth, async (req, res) => {
+  const {workspacename, foldername} = req.body;
+  console.log(workspacename, foldername, req.user.uid, 'sssss')
+  const data = DestroyWorkspace(req.user.uid, workspacename, foldername)
+  res.json({state : 200, message : data})
+})
+
 
 module.exports = router;
