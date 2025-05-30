@@ -179,11 +179,27 @@ const DestroyWorkspace = (uid , workspacename, foldername) => {
     return {state : 200, message  : error}
   }
 }
+const DestroyWorkspacepage = (uid , workspacename, foldername, filename) => {
+  try {
+    const data = Workspacectgrs.destroy({
+      where: {
+        uid: uid,
+        workspace_name: workspacename,
+        parent_id: foldername,
+        workspacesubctgrs_name : filename
+      }
+    })
+    return {state : 200, message  : 'successfull'}
+  } catch (error) {
+    return {state : 200, message  : error}
+  }
+}
 
 // DestroyWorkspace('4272178176', '개인 워크스페이스', '123')
 
 module.exports = {
   savetextData,
+  DestroyWorkspacepage,
   getpageData,
   createPage,
   createFolder,

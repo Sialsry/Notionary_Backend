@@ -4,7 +4,7 @@ const mysql = require("mysql2/promise");
 const dbConfig = {
   host: "localhost",
   user: "root",
-  password: "1994!BDs",
+  password: "bing123",
   database: "Reactproject",
 };
 
