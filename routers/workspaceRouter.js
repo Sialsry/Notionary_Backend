@@ -11,6 +11,7 @@ const {
   getpageData,
   findWspaceContent,
   DestroyWorkspace,
+  DestroyWorkspacepage,
 } = require("../controllers/workspace/workspace.controller");
 const { json } = require("sequelize");
 const { upload } = require("../middlewares/multer");
@@ -126,10 +127,28 @@ router.get("/workspaceContent", auth, async (req, res) => {
 });
 
 router.post("/delworkspace", auth, async (req, res) => {
-  const {workspacename, foldername} = req.body;
-  console.log(workspacename, foldername, req.user.uid, 'sssss')
-  const data = DestroyWorkspace(req.user.uid, workspacename, foldername)
-  res.json({state : 200, message : data})
+  try {
+    const {workspacename, foldername} = req.body;
+    console.log(workspacename, foldername, req.user.uid, 'sssss')
+    const data = DestroyWorkspace(req.user.uid, workspacename, foldername)
+    res.json({state : 200, message : data})
+    
+  } catch (error) {
+    
+    res.json({state : 403, message : error})
+  }
+})
+router.post("/delworkspacepage", auth, async (req, res) => {
+  try {
+    const {workspacename, foldername, filename} = req.body;
+    console.log(workspacename, foldername, req.user.uid, 'sssss')
+    const data = DestroyWorkspacepage(req.user.uid, workspacename, foldername, filename)
+    res.json({state : 200, message : data})
+    
+  } catch (error) {
+    
+    res.json({state : 403, message : error})
+  }
 })
 
 
