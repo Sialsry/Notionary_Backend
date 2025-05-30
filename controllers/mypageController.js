@@ -1,4 +1,11 @@
-const { User, Post, Heart, Comment, Category } = require("../models/config");
+const {
+  User,
+  Post,
+  Heart,
+  Comment,
+  Category,
+  Workspacectgrs,
+} = require("../models/config");
 const sequelize = require("sequelize");
 
 // 좋아요 누른 게시글 목록 조회
@@ -332,5 +339,25 @@ exports.getCommentedPosts = async (req, res) => {
       message: "댓글 작성한 게시글 조회에 실패했습니다.",
       error: process.env.NODE_ENV === "development" ? error.message : undefined,
     });
+  }
+};
+
+exports.getMyWorkspace = async (req, res) => {
+  try {
+    const { uid } = req.user;
+    const data = await Workspacectgrs.findAll({
+      where: { uid },
+      attributes: [
+        "workspace_name",
+        "workspacectgrs_name",
+        "workspacesubctgrs_name",
+        "parent_id",
+      ],
+    });
+    console.log("내 워크스페이스 조회 결과: ", data[0]);
+
+    // return res.status(200).json(data);
+  } catch (error) {
+    return { state: 500, message: "워크스페이스 조회 실패", error };
   }
 };
