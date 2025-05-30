@@ -94,7 +94,7 @@ const findWorkspacedata = async (wname, uid) => {
     }
 
     return result;
-  } catch (error) {}
+  } catch (error) { }
 };
 
 const findworkspaceid = async (workspacename, foldername, filename, uid) => {
@@ -164,6 +164,24 @@ const getpageData = async (workspaceId, filename) => {
   return { PageData: data?.dataValues };
 };
 
+
+const DestroyWorkspace = (uid , workspacename, foldername) => {
+  try {
+    const data = Workspacectgrs.destroy({
+      where: {
+        uid: uid,
+        workspace_name: workspacename,
+        workspacectgrs_name: foldername
+      }
+    })
+    return {state : 200, message  : 'successfull'}
+  } catch (error) {
+    return {state : 200, message  : error}
+  }
+}
+
+// DestroyWorkspace('4272178176', '개인 워크스페이스', '123')
+
 module.exports = {
   savetextData,
   getpageData,
@@ -172,4 +190,5 @@ module.exports = {
   findWorkspacedata,
   findWspaceContent,
   findworkspaceid,
+  DestroyWorkspace
 };
