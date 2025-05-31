@@ -9,8 +9,7 @@ const router = require("express").Router();
     // console.log("내용", req.body.content)
 
 router.post("/", upload.array('media', 5), async (req, res) => {
-    const { post_id, uid, category_id, fk_workspace_id, title, content ,  isWorkspaceShared,
-    selectedPageIds,} = req.body;
+    const { post_id, uid, category_id, fk_workspace_id, title, content , isWorkspaceShared, selectedPageIds,} = req.body;
  
     console.log("req.files:", req.files);
     const imgPaths = req.files
