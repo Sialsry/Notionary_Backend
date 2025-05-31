@@ -16,7 +16,7 @@ const createFolder = async ({ Data }, uid) => {
   }
 };
 
-const createPage = async ({ data }, uid) => {
+const createPage = async ({ data }, uid, workspaceId) => {
   try {
     const { workSpace, folderName, fileName } = data;
     await Workspacectgrs.create({
@@ -25,6 +25,7 @@ const createPage = async ({ data }, uid) => {
       workspacesubctgrs_name: fileName,
       depth: 2,
       parent_id: folderName,
+      fk_workspace_id : workspaceId
     });
     return { state: 200, message: "successful" };
   } catch (error) {
@@ -97,20 +98,47 @@ const findWorkspacedata = async (wname, uid) => {
   } catch (error) { }
 };
 
+const findworkspacefolderid = async (workspacename, foldername, uid) => {
+  try {
+    
+    const data = await Workspacectgrs.findOne({
+      where: {
+        uid: uid,
+        workspace_name: workspacename,
+        workspacectgrs_name: foldername,
+        
+      },
+    });
+    if (data) {
+      const workspaceId = data.dataValues.workspace_id;
+      return { workspaceId };
+    } else {
+      return null;
+    }
+  } catch (error) {
+    return {data : error}
+  }
+};
+
 const findworkspaceid = async (workspacename, foldername, filename, uid) => {
-  const data = await Workspacectgrs.findOne({
-    where: {
-      uid: uid,
-      workspace_name: workspacename,
-      parent_id: foldername,
-      workspacesubctgrs_name: filename,
-    },
-  });
-  if (data) {
-    const workspaceId = data.dataValues.workspace_id;
-    return { workspaceId };
-  } else {
-    return null;
+  try {
+    
+    const data = await Workspacectgrs.findOne({
+      where: {
+        uid: uid,
+        workspace_name: workspacename,
+        parent_id: foldername,
+        workspacesubctgrs_name: filename,
+      },
+    });
+    if (data) {
+      const workspaceId = data.dataValues.workspace_id;
+      return { workspaceId };
+    } else {
+      return null;
+    }
+  } catch (error) {
+    return {data : error}
   }
 };
 
@@ -200,6 +228,7 @@ const DestroyWorkspacepage = (uid , workspacename, foldername, filename) => {
 module.exports = {
   savetextData,
   DestroyWorkspacepage,
+  findworkspacefolderid,
   getpageData,
   createPage,
   createFolder,

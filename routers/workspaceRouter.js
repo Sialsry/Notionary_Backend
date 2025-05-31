@@ -12,6 +12,7 @@ const {
   findWspaceContent,
   DestroyWorkspace,
   DestroyWorkspacepage,
+  findworkspacefolderid,
 } = require("../controllers/workspace/workspace.controller");
 const { json } = require("sequelize");
 const { upload } = require("../middlewares/multer");
@@ -35,9 +36,14 @@ router.post("/newFolder", auth, async (req, res) => {
 
 router.post("/newPage", auth, async (req, res) => {
   const { data } = req.body;
+  console.log(data,'dddd')
   try {
+    const {workSpace, folderName, fileName} = data.data;
     const { uid } = req.user;
-    const { Data } = await createPage(data, uid);
+    console.log(workSpace, folderName, fileName, uid, data,'ppp')
+    const {workspaceId} = await findworkspacefolderid(workSpace, folderName, uid)
+    console.log(workspaceId, 'ooooo')
+    const { Data } = await createPage(data, uid, workspaceId);
     res.json({ state: 200, data });
   } catch (error) {
     res.json({ state: 200, message: error });
@@ -48,15 +54,20 @@ router.get(
   "/selectspace/:workspacename/:foldername/:filename",
   auth,
   async (req, res) => {
-    const { workspacename, foldername, filename } = req.params;
-    const { workspaceId } = await findworkspaceid(
-      workspacename,
-      foldername,
-      filename,
-      req.user.uid
-    );
-    const PageData = await getpageData(workspaceId, filename);
-    res.json({ data: PageData });
+    try {
+      
+      const { workspacename, foldername, filename } = req.params;
+      const { workspaceId } = await findworkspaceid(
+        workspacename,
+        foldername,
+        filename,
+        req.user.uid
+      );
+      const PageData = await getpageData(workspaceId, filename);
+      res.json({ data: PageData });
+    } catch (error) {
+      res.json({data : error})
+    }
   }
 );
 
@@ -129,6 +140,7 @@ router.get("/workspaceContent", auth, async (req, res) => {
 router.post("/delworkspace", auth, async (req, res) => {
   try {
     const {workspacename, foldername} = req.body;
+    console.log(workspacename, foldername,'dfdfdf')
     console.log(workspacename, foldername, req.user.uid, 'sssss')
     const data = DestroyWorkspace(req.user.uid, workspacename, foldername)
     res.json({state : 200, message : data})
