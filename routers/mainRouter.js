@@ -22,9 +22,6 @@ const axios = require("axios");
 
 // 전체 게시글 조회 라우팅
 router.get("/", async (req, res) => {
-  // 쿠키 파싱
-  const { uid } = req.cookies;
-  console.log(req.cookies, "쿠키에서 uid:", uid);
   const data = await getAllPost();
   res.json(data);
 });
