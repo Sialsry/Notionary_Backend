@@ -1,4 +1,4 @@
-const { Post, Category, Comment, Heart, User } = require("../../models/config");
+const { Post, Category, Comment, Heart, User, Workspacectgrs } = require("../../models/config");
 
 // 일단 전체 카테고리에 대한 게시글 조회 함수
 const getAllPost = async () => {
@@ -181,14 +181,16 @@ const CreatePost = async ({
   post_id,
   uid,
   category_id,
+  fk_workspace_id,
   title,
   content,
   imgPaths,
   videoPaths,
+  isWorkspaceShared,
+  selectedPageIds,
 }) => {
   try {
     const category = await Category.findByPk(category_id);
-
     if (!category) {
       return { state: 404, message: "유효하지 않은 카테고리입니다." };
     }
@@ -200,10 +202,24 @@ const CreatePost = async ({
       };
     }
 
+    const shared = isWorkspaceShared === true || isWorkspaceShared === 'true';
+
+    if (!shared) {
+      fk_workspace_id = null;
+    } else {
+      if (!fk_workspace_id || !selectedPageIds) {
+        return {
+          state: 400,
+          message: "워크스페이스 공유를 선택한 경우, 워크스페이스 및 페이지 ID는 필수입니다.",
+        };
+      }
+    }
+
     const data = await Post.create({
       post_id,
       uid,
       category_id,
+      fk_workspace_id, // null 또는 실제 ID
       title,
       content,
       imgPaths: JSON.stringify(imgPaths),
@@ -215,6 +231,28 @@ const CreatePost = async ({
     return { state: 484, message: "게시글 등록 실패!!!", error };
   }
 };
+
+
+
+
+const getUserWorkspaces = async (uid) => {
+  try {
+    const data = await Workspacectgrs.findAll({
+      where: { uid },
+      attributes: ["workspace_id","workspace_name", "workspacectgrs_name", "workspacesubctgrs_name", "parent_id"],
+    });
+    return { state: 200, message: "워크스페이스 조회 성공", data };
+  } catch (error) {
+    return { state: 500, message: "워크스페이스 조회 실패", error };
+  }
+};
+
+// (async () => {
+//   const result = await getUserWorkspaces("suho123");
+//   console.log("유저 워크스페이스 ",result,);
+// })();
+
+
 
 const getMyPost = async (req, res) => {
   try {
@@ -303,4 +341,4 @@ const getMyPost = async (req, res) => {
   }
 };
 
-module.exports = { getAllPost, getSubPost, getEtcPost, CreatePost, getMyPost };
+module.exports = { getAllPost, getSubPost, getEtcPost, CreatePost, getMyPost, getUserWorkspaces };

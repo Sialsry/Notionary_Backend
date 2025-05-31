@@ -18,6 +18,10 @@ class Post extends Model {
           type: DataTypes.INTEGER,
           allowNull: false,
         },
+        fk_workspace_id: { 
+          type: DataTypes.INTEGER,
+          allowNull: true,
+        },
         title: {
           type: DataTypes.STRING(50),
           allowNull: false,
@@ -26,9 +30,9 @@ class Post extends Model {
           type: DataTypes.STRING(1000),
           allowNull: false,
         },
-        videoPaths : {
-          type : DataTypes.STRING(1000),
-          allowNull : false,
+        videoPaths: {
+          type: DataTypes.STRING(1000),
+          allowNull: false,
         },
         content: {
           type: DataTypes.STRING(200),
@@ -51,6 +55,10 @@ class Post extends Model {
     db.Post.belongsTo(db.Category, {
       foreignKey: "category_id",
       targetKey: "category_id",
+    });
+    db.Post.belongsTo(db.Workspacectgrs, { 
+      foreignKey: "fk_workspace_id",
+      targetKey: "workspace_id",     
     });
     db.Post.hasMany(db.Comment, {
       foreignKey: "post_id",
