@@ -62,7 +62,7 @@ myproject.associate(db);
 teamproject.associate(db);
 
 sequelize
-  .sync({ force: false })
+  .sync({ force: false  })
   .then(() => {
     console.log("시퀄라이즈 연결 성공");
   })
@@ -71,7 +71,7 @@ sequelize
 module.exports = db;
 
 const datainit = async () => {
-  const data = ["개인 워크스페이스", "팀 워크이스페이스"];
+  const data = ["개인 워크스페이스"];
   await Promise.all(
     data.map((el) => {
       console.log(el, "hey");

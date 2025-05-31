@@ -34,13 +34,6 @@ const getAllPost = async () => {
             {
               model: Workspacectgrs,
               attributes: ["workspace_id","workspace_name", "workspacectgrs_name", "depth", "workspacesubctgrs_name", "parent_id"],
-              include: [
-                {
-                  model: Workspacectgrs,
-                  as: "ParentCategory",
-                  attributes: ["workspace_name"]
-                },
-              ]
             }
           ]
         },
@@ -61,10 +54,10 @@ const getAllPost = async () => {
   }
 };
 
-(async () => {
-    const result = await getAllPost();
-    console.dir(result, { depth: null });
-})();
+// (async () => {
+//     const result = await getAllPost();
+//     console.dir(result, { depth: null });
+// })();
 
 // 세부 카테고리 데이터 조회 및 게시글 조회 함수
 const getSubPost = async (categoryName, subCategory) => {
@@ -323,7 +316,7 @@ const getMyPost = async (req, res) => {
       post.category_name = post.Category.category_name; // 카테고리 이름 추가
       post.comments = post.Comments ? post.Comments.length : 0; // 댓글 개수 추가
       delete post.Category; // 불필요한 Category 필드 제거
-      post.imgPaths = JSON.parse(post.imgPaths)
+      post.imgPaths = JSON.parse(post.imgPaths)[0]
         ? JSON.parse(post.imgPaths)[0] // JSON 문자열을 배열로 변환
         : "http://localhost:4000/images/default/default_profile.png"; // imgPaths가 없으면 빈 배열로 설정
       post.createdAt = new Date(post.createdAt).toLocaleDateString("ko-KR", {

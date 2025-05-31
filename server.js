@@ -44,6 +44,7 @@ app.use("/api/auth", authRouter);
 app.use("/workspace", workspaceRouter);
 app.use("/detail", detailRouter);
 
+
 app.get("/", (req, res) => {
   console.log("cookie11111");
   // getCookie(req, res, next);

@@ -9,4 +9,6 @@ router.get("/getLikedPosts", auth, mypageController.getLikedPosts);
 
 router.get("/getCommentedPosts", auth, mypageController.getCommentedPosts);
 
+router.get("/getMyWorkspace", auth, mypageController.getMyWorkspace);
+
 module.exports = router;
