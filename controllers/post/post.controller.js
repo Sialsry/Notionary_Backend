@@ -34,13 +34,6 @@ const getAllPost = async () => {
             {
               model: Workspacectgrs,
               attributes: ["workspace_id","workspace_name", "workspacectgrs_name", "depth", "workspacesubctgrs_name", "parent_id"],
-              include: [
-                {
-                  model: Workspacectgrs,
-                  as: "ParentCategory",
-                  attributes: ["workspace_name"]
-                },
-              ]
             }
           ]
         },
@@ -61,10 +54,10 @@ const getAllPost = async () => {
   }
 };
 
-(async () => {
-    const result = await getAllPost();
-    console.dir(result, { depth: null });
-})();
+// (async () => {
+//     const result = await getAllPost();
+//     console.dir(result, { depth: null });
+// })();
 
 // 세부 카테고리 데이터 조회 및 게시글 조회 함수
 const getSubPost = async (categoryName, subCategory) => {
