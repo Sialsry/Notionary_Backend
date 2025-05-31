@@ -5,7 +5,8 @@ const mypageRouter = require("./mypageRouter");
 const myprojectRouter = require("./myprojectRouter");
 const teamprojectRouter = require("./teamprojectRouter");
 const authRouter = require("./authRouter");
-const workspaceRouter = require("./workspaceRouter")
+const workspaceRouter = require("./workspaceRouter");
+const detailRouter = require("./detailRouter");
 
 module.exports = {
   workspaceRouter,
@@ -16,4 +17,5 @@ module.exports = {
   myprojectRouter,
   teamprojectRouter,
   authRouter,
+  detailRouter,
 };

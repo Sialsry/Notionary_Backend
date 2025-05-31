@@ -8,8 +8,7 @@ class Workspacectgrs extends Model {
         workspace_id: {
           type: DataTypes.INTEGER,
           autoIncrement: true,
-          primaryKey: true,
-
+          primaryKey : true,
         },
         uid: {
           type: DataTypes.STRING(20),
