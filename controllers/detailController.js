@@ -89,38 +89,100 @@ exports.getPostDetail = async (req, res) => {
 
     // 이미지 처리
     let images = [];
-    if (post.imgPaths && post.imgPaths.trim() !== "") {
-      images = post.imgPaths
-        .split(",")
-        .map((img) => img.trim())
-        .filter((img) => img)
-        .map((img) => {
-          if (!img.startsWith("http")) {
-            return `http://localhost:4000/uploads/posts/${img}`;
-          }
-          return img;
-        });
+    console.log("이미지 경로:", post.imgPaths);
+    console.log("이미지 경로 타입:", typeof post.imgPaths);
+
+    // 올바른 조건 처리
+    if (
+      !post.imgPaths ||
+      post.imgPaths.trim() === "" ||
+      post.imgPaths === "[]"
+    ) {
+      images = [];
+    } else {
+      try {
+        // JSON 문자열인 경우 파싱 시도
+        const parsedImages = JSON.parse(post.imgPaths);
+        if (Array.isArray(parsedImages) && parsedImages.length > 0) {
+          images = parsedImages.map((img) => {
+            if (!img.startsWith("http")) {
+              return `http://localhost:4000/uploads/posts/${img}`;
+            }
+            return img;
+          });
+        } else {
+          images = [];
+        }
+      } catch (error) {
+        // JSON 파싱 실패 시 콤마로 구분된 문자열로 처리
+        images = post.imgPaths
+          .split(",")
+          .map((img) => img.trim())
+          .filter((img) => img)
+          .map((img) => {
+            if (!img.startsWith("http")) {
+              return `http://localhost:4000/uploads/posts/${img}`;
+            }
+            return img;
+          });
+      }
     }
+
+    console.log("처리된 이미지 경로:", images);
 
     // 동영상 처리
     let videos = [];
-    if (post.videoPaths && post.videoPaths.trim() !== "") {
-      videos = post.videoPaths
-        .split(",")
-        .map((video) => video.trim())
-        .filter((video) => video)
-        .map((video) => {
-          if (!video.startsWith("http")) {
-            return `http://localhost:4000/uploads/posts/${video}`;
-          }
-          return video;
-        });
+    console.log("동영상 경로:", post.videoPaths);
+    console.log("동영상 경로 타입:", typeof post.videoPaths);
+
+    // 올바른 조건 처리
+    if (
+      !post.videoPaths ||
+      post.videoPaths.trim() === "" ||
+      post.videoPaths === "[]"
+    ) {
+      videos = [];
+    } else {
+      try {
+        // JSON 문자열인 경우 파싱 시도
+        const parsedVideos = JSON.parse(post.videoPaths);
+        if (Array.isArray(parsedVideos) && parsedVideos.length > 0) {
+          videos = parsedVideos.map((video) => {
+            if (!video.startsWith("http")) {
+              return `http://localhost:4000/uploads/posts/${video}`;
+            }
+            return video;
+          });
+        } else {
+          videos = [];
+        }
+      } catch (error) {
+        // JSON 파싱 실패 시 콤마로 구분된 문자열로 처리
+        videos = post.videoPaths
+          .split(",")
+          .map((video) => video.trim())
+          .filter((video) => video)
+          .map((video) => {
+            if (!video.startsWith("http")) {
+              return `http://localhost:4000/uploads/posts/${video}`;
+            }
+            return video;
+          });
+      }
     }
 
+    console.log("처리된 동영상 경로:", videos);
+
     // 작성자 프로필 이미지 처리
+    console.log("작성자 프로필 이미지:", post.User.profImg);
+
     let authorProfileImg = post.User.profImg;
     if (authorProfileImg && !authorProfileImg.startsWith("http")) {
       authorProfileImg = `http://localhost:4000/uploads/profile/${authorProfileImg}`;
+    }
+    if (post.User.profImg === "/images/default_profile.png") {
+      authorProfileImg =
+        "http://localhost:4000/images/default/default_profile.png";
     }
 
     // 댓글 데이터 처리

@@ -25,7 +25,7 @@ const createPage = async ({ data }, uid, workspaceId) => {
       workspacesubctgrs_name: fileName,
       depth: 2,
       parent_id: folderName,
-      fk_workspace_id : workspaceId
+      fk_workspace_id: workspaceId
     });
     return { state: 200, message: "successful" };
   } catch (error) {
@@ -100,13 +100,13 @@ const findWorkspacedata = async (wname, uid) => {
 
 const findworkspacefolderid = async (workspacename, foldername, uid) => {
   try {
-    
+
     const data = await Workspacectgrs.findOne({
       where: {
         uid: uid,
         workspace_name: workspacename,
         workspacectgrs_name: foldername,
-        
+
       },
     });
     if (data) {
@@ -116,13 +116,13 @@ const findworkspacefolderid = async (workspacename, foldername, uid) => {
       return null;
     }
   } catch (error) {
-    return {data : error}
+    return { data: error }
   }
 };
 
 const findworkspaceid = async (workspacename, foldername, filename, uid) => {
   try {
-    
+
     const data = await Workspacectgrs.findOne({
       where: {
         uid: uid,
@@ -138,7 +138,7 @@ const findworkspaceid = async (workspacename, foldername, filename, uid) => {
       return null;
     }
   } catch (error) {
-    return {data : error}
+    return { data: error }
   }
 };
 
@@ -193,7 +193,7 @@ const getpageData = async (workspaceId, filename) => {
 };
 
 
-const DestroyWorkspace = (uid , workspacename, foldername) => {
+const DestroyWorkspace = (uid, workspacename, foldername) => {
   try {
     const data = Workspacectgrs.destroy({
       where: {
@@ -202,31 +202,53 @@ const DestroyWorkspace = (uid , workspacename, foldername) => {
         workspacectgrs_name: foldername
       }
     })
-    return {state : 200, message  : 'successfull'}
+    return { state: 200, message: 'successfull' }
   } catch (error) {
-    return {state : 200, message  : error}
+    return { state: 200, message: error }
   }
 }
-const DestroyWorkspacepage = (uid , workspacename, foldername, filename) => {
+const DestroyWorkspacepage = (uid, workspacename, foldername, filename) => {
   try {
     const data = Workspacectgrs.destroy({
       where: {
         uid: uid,
         workspace_name: workspacename,
         parent_id: foldername,
-        workspacesubctgrs_name : filename
+        workspacesubctgrs_name: filename
       }
     })
-    return {state : 200, message  : 'successfull'}
+    return { state: 200, message: 'successfull' }
   } catch (error) {
-    return {state : 200, message  : error}
+    return { state: 200, message: error }
   }
+}
+
+
+const getIdpagedata = async (result_id) => {
+  console.log(result_id, 'resultid') // [ 5, 6 ] resultid
+  try {
+
+    const data = await Page.findAll({
+      where: {
+        workspace_id: result_id
+      }
+
+    })
+    const newData = data.map((page => page.dataValues))
+      console.log(newData, 'result data11')
+    return ({data : newData})
+  } catch (error) {
+    console.log(error)
+    return (error, 'error111')
+  }
+
 }
 
 // DestroyWorkspace('4272178176', '개인 워크스페이스', '123')
 
 module.exports = {
   savetextData,
+  getIdpagedata,
   DestroyWorkspacepage,
   findworkspacefolderid,
   getpageData,
