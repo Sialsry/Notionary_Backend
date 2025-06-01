@@ -13,6 +13,8 @@ const getAllPost = async () => {
             "post_id",
             "uid",
             "category_id",
+            "fk_workspace_id",
+            "workspace_pages",
             "title",
             "imgPaths",
             "videoPaths",
@@ -191,7 +193,22 @@ const CreatePost = async ({
   content,
   imgPaths,
   videoPaths,
+<<<<<<< HEAD
+=======
+  isWorkspaceShared,
+  workspace_pages,
+>>>>>>> bing
 }) => {
+  console.log(post_id,
+  uid,
+  category_id,
+  fk_workspace_id,
+  title,
+  content,
+  imgPaths,
+  videoPaths,
+  isWorkspaceShared,
+  workspace_pages,'kkkk')
   try {
     const category = await Category.findByPk(category_id);
     if (!category) {
@@ -205,11 +222,28 @@ const CreatePost = async ({
       };
     }
 
+<<<<<<< HEAD
+=======
+    const shared = isWorkspaceShared === true || isWorkspaceShared === 'true';
+
+    if (!shared) {
+      fk_workspace_id = null;
+    } else {
+      if (!fk_workspace_id || !workspace_pages) {
+        return {
+          state: 400,
+          message: "워크스페이스 공유를 선택한 경우, 워크스페이스 및 페이지 ID는 필수입니다.",
+        };
+      }
+    }
+
+>>>>>>> bing
     const data = await Post.create({
       post_id,
       uid,
       category_id,
       fk_workspace_id,
+      workspace_pages,
       title,
       content,
       imgPaths: JSON.stringify(imgPaths),
@@ -218,6 +252,7 @@ const CreatePost = async ({
 
     return { state: 200, message: "게시글 등록 성공!!!", data };
   } catch (error) {
+    console.log(error, 'error')
     return { state: 484, message: "게시글 등록 실패!!!", error };
   }
 };

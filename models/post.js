@@ -22,6 +22,10 @@ class Post extends Model {
           type: DataTypes.INTEGER,
           allowNull: true,
         },
+        workspace_pages : {
+          type : DataTypes.STRING(50),
+          allowNull : true,
+        },
         title: {
           type: DataTypes.STRING(50),
           allowNull: false,

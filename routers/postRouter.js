@@ -13,6 +13,7 @@ const router = require("express").Router();
 // console.log("제목", req.body.title)
 // console.log("내용", req.body.content)
 
+<<<<<<< HEAD
 router.post("/", upload.array("media", 5), async (req, res) => {
   const { post_id, uid, category_id, fk_workspace_id, title, content } =
     req.body;
@@ -24,6 +25,19 @@ router.post("/", upload.array("media", 5), async (req, res) => {
         .replace(/\\/g, "/")
         .replace(/^public\//, "");
       return `http://localhost:4000/${relativePath}`;
+=======
+router.post("/", upload.array('media', 5), async (req, res) => {
+    const { post_id, uid, category_id, fk_workspace_id, title, content , isWorkspaceShared, workSpace_pages,} = req.body;
+    const workspace_pages =  JSON.stringify(workSpace_pages.split(',').map(s => Number(s.trim())))
+    console.log("fk1111",fk_workspace_id,workspace_pages )
+ 
+    console.log("req.files:", req.files);
+    const imgPaths = req.files
+    .filter(file => file.mimetype.startsWith('image/'))
+    .map(file => {
+        const relativePath = file.path.replace(/\\/g, '/').replace(/^public\//, '');
+        return `http://localhost:4000/${relativePath}`;
+>>>>>>> bing
     });
 
   const videoPaths = req.files
@@ -35,6 +49,7 @@ router.post("/", upload.array("media", 5), async (req, res) => {
       return `http://localhost:4000/${relativePath}`;
     });
 
+<<<<<<< HEAD
   const data = await CreatePost({
     post_id,
     uid,
@@ -45,6 +60,10 @@ router.post("/", upload.array("media", 5), async (req, res) => {
     imgPaths,
     videoPaths,
   });
+=======
+    const data = await CreatePost({post_id, uid, category_id, fk_workspace_id, title, content, imgPaths, videoPaths,  isWorkspaceShared,
+    workspace_pages,});
+>>>>>>> bing
 
   res.json(data);
 });
