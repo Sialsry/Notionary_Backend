@@ -9,7 +9,9 @@ const router = require("express").Router();
     // console.log("내용", req.body.content)
 
 router.post("/", upload.array('media', 5), async (req, res) => {
-    const { post_id, uid, category_id, fk_workspace_id, title, content , isWorkspaceShared, selectedPageIds,} = req.body;
+    const { post_id, uid, category_id, fk_workspace_id, title, content , isWorkspaceShared, workSpace_pages,} = req.body;
+    const workspace_pages =  JSON.stringify(workSpace_pages.split(',').map(s => Number(s.trim())))
+    console.log("fk1111",fk_workspace_id,workspace_pages )
  
     console.log("req.files:", req.files);
     const imgPaths = req.files
@@ -27,7 +29,7 @@ router.post("/", upload.array('media', 5), async (req, res) => {
     });
 
     const data = await CreatePost({post_id, uid, category_id, fk_workspace_id, title, content, imgPaths, videoPaths,  isWorkspaceShared,
-    selectedPageIds,});
+    workspace_pages,});
 
     res.json(data);
 });
