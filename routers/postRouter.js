@@ -73,7 +73,7 @@ router.post("/getWorkspace", async (req, res) => {
 
 router.put("/edit/:post_id", upload.array("media", 5), async (req, res) => {
   const { post_id } = req.params;
-  const { uid, category_id, fk_workspace_id, title, content } = req.body;
+  const { uid, category_id, title, content } = req.body;
   console.log("▶▶▶ 백엔드 디버그: req.body.uid 값:", req.body.uid);
 
   const imgPaths = req.files
@@ -97,7 +97,6 @@ router.put("/edit/:post_id", upload.array("media", 5), async (req, res) => {
     post_id,
     uid,
     category_id,
-    fk_workspace_id,
     title,
     content,
     imgPaths,
