@@ -260,6 +260,8 @@ const CreatePost = async ({
       content,
       imgPaths: JSON.stringify(imgPaths),
       videoPaths: JSON.stringify(videoPaths),
+      isWorkspaceShared,
+      workspace_pages,
     });
 
     return { state: 200, message: "게시글 등록 성공!!!", data };
@@ -277,7 +279,6 @@ const UpdatePost = async ({
   category_id,
   imgPaths,
   videoPaths,
-  fk_workspace_id,
 }) => {
   try {
     const post = await Post.findByPk(post_id);
@@ -293,7 +294,6 @@ const UpdatePost = async ({
         category_id,
         imgPaths: JSON.stringify(imgPaths),
         videoPaths: JSON.stringify(videoPaths),
-        fk_workspace_id,
       },
       {
         where: { post_id },

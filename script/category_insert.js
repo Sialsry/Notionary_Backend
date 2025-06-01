@@ -4,8 +4,8 @@ const mysql = require("mysql2/promise");
 const dbConfig = {
   host: "localhost",
   user: "root",
-  password: "bing123",
-  database: "Reactproject",
+  password: "suho4029",
+  database: "project",
 };
 
 // 카테고리 데이터
