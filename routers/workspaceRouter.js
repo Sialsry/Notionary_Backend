@@ -99,7 +99,7 @@ router.post(
 
 router.post(
   "/selectspace/:workspacename/:foldername/:_filename/image/:id",
-  upload.single("imgpath"),
+  upload.single("imgfile"),
   auth,
   async (req, res) => {
     const { workspacename, foldername, _filename, id } = req.params;
