@@ -1,4 +1,4 @@
-const { Post, Category, Comment, Heart, User } = require("../../models/config");
+const { Post, Category, Comment, Heart, User, Workspacectgrs } = require("../../models/config");
 
 // 일단 전체 카테고리에 대한 게시글 조회 함수
 const getAllPost = async () => {
@@ -12,6 +12,8 @@ const getAllPost = async () => {
             "post_id",
             "uid",
             "category_id",
+            "fk_workspace_id",
+            "workspace_pages",
             "title",
             "imgPaths",
             "videoPaths",
@@ -31,7 +33,11 @@ const getAllPost = async () => {
               model: Heart,
               attributes: ["uid"],
             },
-          ],
+            {
+              model: Workspacectgrs,
+              attributes: ["workspace_id","workspace_name", "workspacectgrs_name", "depth", "workspacesubctgrs_name", "parent_id"],
+            }
+          ]
         },
         {
           model: Category,
@@ -181,14 +187,26 @@ const CreatePost = async ({
   post_id,
   uid,
   category_id,
+  fk_workspace_id,
   title,
   content,
   imgPaths,
   videoPaths,
+  isWorkspaceShared,
+  workspace_pages,
 }) => {
+  console.log(post_id,
+  uid,
+  category_id,
+  fk_workspace_id,
+  title,
+  content,
+  imgPaths,
+  videoPaths,
+  isWorkspaceShared,
+  workspace_pages,'kkkk')
   try {
     const category = await Category.findByPk(category_id);
-
     if (!category) {
       return { state: 404, message: "유효하지 않은 카테고리입니다." };
     }
@@ -200,10 +218,25 @@ const CreatePost = async ({
       };
     }
 
+    const shared = isWorkspaceShared === true || isWorkspaceShared === 'true';
+
+    if (!shared) {
+      fk_workspace_id = null;
+    } else {
+      if (!fk_workspace_id || !workspace_pages) {
+        return {
+          state: 400,
+          message: "워크스페이스 공유를 선택한 경우, 워크스페이스 및 페이지 ID는 필수입니다.",
+        };
+      }
+    }
+
     const data = await Post.create({
       post_id,
       uid,
       category_id,
+      fk_workspace_id,
+      workspace_pages,
       title,
       content,
       imgPaths: JSON.stringify(imgPaths),
@@ -212,9 +245,32 @@ const CreatePost = async ({
 
     return { state: 200, message: "게시글 등록 성공!!!", data };
   } catch (error) {
+    console.log(error, 'error')
     return { state: 484, message: "게시글 등록 실패!!!", error };
   }
 };
+
+
+
+
+const getUserWorkspaces = async (uid) => {
+  try {
+    const data = await Workspacectgrs.findAll({
+      where: { uid },
+      attributes: ["workspace_id","workspace_name", "workspacectgrs_name", "workspacesubctgrs_name", "parent_id"],
+    });
+    return { state: 200, message: "워크스페이스 조회 성공", data };
+  } catch (error) {
+    return { state: 500, message: "워크스페이스 조회 실패", error };
+  }
+};
+
+// (async () => {
+//   const result = await getUserWorkspaces("suho123");
+//   console.log("유저 워크스페이스 ",result,);
+// })();
+
+
 
 const getMyPost = async (req, res) => {
   try {
@@ -274,7 +330,7 @@ const getMyPost = async (req, res) => {
       post.category_name = post.Category.category_name; // 카테고리 이름 추가
       post.comments = post.Comments ? post.Comments.length : 0; // 댓글 개수 추가
       delete post.Category; // 불필요한 Category 필드 제거
-      post.imgPaths = JSON.parse(post.imgPaths)
+      post.imgPaths = JSON.parse(post.imgPaths)[0]
         ? JSON.parse(post.imgPaths)[0] // JSON 문자열을 배열로 변환
         : "http://localhost:4000/images/default/default_profile.png"; // imgPaths가 없으면 빈 배열로 설정
       post.createdAt = new Date(post.createdAt).toLocaleDateString("ko-KR", {
@@ -303,4 +359,4 @@ const getMyPost = async (req, res) => {
   }
 };
 
-module.exports = { getAllPost, getSubPost, getEtcPost, CreatePost, getMyPost };
+module.exports = { getAllPost, getSubPost, getEtcPost, CreatePost, getMyPost, getUserWorkspaces };

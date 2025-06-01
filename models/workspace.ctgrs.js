@@ -8,8 +8,7 @@ class Workspacectgrs extends Model {
         workspace_id: {
           type: DataTypes.INTEGER,
           autoIncrement: true,
-          primaryKey: true,
-
+          primaryKey : true,
         },
         uid: {
           type: DataTypes.STRING(20),
@@ -72,7 +71,15 @@ class Workspacectgrs extends Model {
     // });
     this.hasMany(db.Page,{
       foreignKey: 'fk_workspace_id',
-      targetKey: 'workspace_id'
+      targetKey: 'workspace_id',
+      
+    })
+    this.hasMany(db.Post,{
+      foreignKey: 'fk_workspace_id',
+      targetKey: 'workspace_id',
+       onDelete: 'CASCADE',
+      onUpdate : 'CASCADE'
+      
     })
     this.belongsTo(db.Workspace, {
       foreignKey: "fk_workspace_name",
