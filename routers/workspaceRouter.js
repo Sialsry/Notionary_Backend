@@ -13,6 +13,7 @@ const {
   DestroyWorkspace,
   DestroyWorkspacepage,
   findworkspacefolderid,
+  getIdpagedata,
 } = require("../controllers/workspace/workspace.controller");
 const { json } = require("sequelize");
 const { upload } = require("../middlewares/multer");
@@ -78,15 +79,21 @@ router.post(
     const { workspacename, foldername, filename } = req.params;
     const { data } = req.body;
     const Data = JSON.stringify(data);
-    const { workspaceId } = await findworkspaceid(
-      workspacename,
-      foldername,
-      filename,
-      req.user.uid
-    );
-    const savepageData = await savetextData(workspaceId, filename, Data);
-    const PageData = await getpageData(workspaceId, filename);
-    res.json({ data: PageData });
+    try {
+      
+      const { workspaceId } = await findworkspaceid(
+        workspacename,
+        foldername,
+        filename,
+        req.user.uid
+      );
+      console.log(workspaceId, ' workspacedi')
+      const savepageData = await savetextData(workspaceId, filename, Data);
+      const PageData = await getpageData(workspaceId, filename);
+      res.json({ data: PageData });
+    } catch (error) {
+      res.json(error)
+    }
   }
 );
 
@@ -161,6 +168,14 @@ router.post("/delworkspacepage", auth, async (req, res) => {
     
     res.json({state : 403, message : error})
   }
+})
+
+router.post("/getBlockIdcontent", auth, async (req, res) => {
+  console.log('1111111111111111')
+  const {result_id} = req.body;
+  const data = await getIdpagedata(result_id)
+  // console.log(result_id, '222222222222', data)
+  res.json({data})
 })
 
 
