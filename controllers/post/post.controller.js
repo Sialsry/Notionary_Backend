@@ -1,3 +1,4 @@
+const { where } = require("sequelize");
 const { Post, Category, Comment, Heart, User, Workspacectgrs } = require("../../models/config");
 
 // 일단 전체 카테고리에 대한 게시글 조회 함수
@@ -190,8 +191,6 @@ const CreatePost = async ({
   content,
   imgPaths,
   videoPaths,
-  isWorkspaceShared,
-  selectedPageIds,
 }) => {
   try {
     const category = await Category.findByPk(category_id);
@@ -204,19 +203,6 @@ const CreatePost = async ({
         state: 400,
         message: "게시글은 세부 카테고리에만 등록할 수 있습니다.",
       };
-    }
-
-    const shared = isWorkspaceShared === true || isWorkspaceShared === 'true';
-
-    if (!shared) {
-      fk_workspace_id = null;
-    } else {
-      if (!fk_workspace_id || !selectedPageIds) {
-        return {
-          state: 400,
-          message: "워크스페이스 공유를 선택한 경우, 워크스페이스 및 페이지 ID는 필수입니다.",
-        };
-      }
     }
 
     const data = await Post.create({
@@ -237,6 +223,78 @@ const CreatePost = async ({
 };
 
 
+
+
+const UpdatePost = async ({
+  post_id,
+  uid,
+  title,
+  content,
+  category_id,
+  imgPaths,
+  videoPaths,
+  fk_workspace_id,
+}) => {
+  try {
+    const post = await Post.findByPk(post_id);
+    if (!post) {
+      return { state: 404, message: "해당 게시글을 찾을 수 없습니다." };
+    }
+
+    const data = await Post.update(
+      {
+        title,
+        uid,
+        content,
+        category_id,
+        imgPaths: JSON.stringify(imgPaths),
+        videoPaths: JSON.stringify(videoPaths),
+        fk_workspace_id
+      },
+      {
+        where: { post_id },
+      }
+    );
+
+    return { state: 200, message: "게시글 수정 성공!", data };
+  } catch (error) {
+    return { state: 500, message: "게시글 수정 실패", error };
+  }
+};
+
+
+
+// // (async () => {
+// //   const response = await UpdatePost({
+// //     post_id: 9,
+// //     uid: 4270722392,
+// //     title: "비노dsdds",
+// //     content: "모르sdsdsd요.",
+// //     imgPaths: ["sdsdsdsdsd.jpg", "dsdsdsdsdsdsd.jpg"],
+// //     videoPaths: ["dsdsdsdsd.mp4"],
+// //     fk_workspace_id: 22,
+// //   });
+
+//   console.log("수정된 게시글:", response);
+// })();
+
+
+const getPostById = async (post_id) => {
+  try {
+    const data = await Post.findOne({where : {post_id}})
+    return { state: 200, message: "게시글 조회 성공", data };
+  } catch (error) {
+    console.error("게시글 조회 에러:", error);
+    return { state: 500, message: "서버 오류", error };
+  }
+};
+
+//  디버깅: 즉시 실행
+// (async () => {
+//   const testPostId = 2; // 확인할 post_id 값
+//   const result = await getPostById(testPostId);
+//   console.log("📌 게시글 조회 결과:", result);
+// })();
 
 
 const getUserWorkspaces = async (uid) => {
@@ -345,4 +403,4 @@ const getMyPost = async (req, res) => {
   }
 };
 
-module.exports = { getAllPost, getSubPost, getEtcPost, CreatePost, getMyPost, getUserWorkspaces };
+module.exports = { getAllPost, getSubPost, getEtcPost,  CreatePost, UpdatePost , getMyPost, getUserWorkspaces, getPostById };

@@ -1,4 +1,4 @@
-const { CreatePost, getUserWorkspaces } = require("../controllers/post/post.controller");
+const { CreatePost, getUserWorkspaces, UpdatePost, getPostById} = require("../controllers/post/post.controller");
 const { upload } = require("../middlewares/multer");
 
 const router = require("express").Router();
@@ -9,8 +9,7 @@ const router = require("express").Router();
     // console.log("내용", req.body.content)
 
 router.post("/", upload.array('media', 5), async (req, res) => {
-    const { post_id, uid, category_id, fk_workspace_id, title, content , isWorkspaceShared, selectedPageIds,} = req.body;
- 
+    const { post_id, uid, category_id, fk_workspace_id, title, content} = req.body;
     console.log("req.files:", req.files);
     const imgPaths = req.files
     .filter(file => file.mimetype.startsWith('image/'))
@@ -26,8 +25,7 @@ router.post("/", upload.array('media', 5), async (req, res) => {
         return `http://localhost:4000/${relativePath}`;
     });
 
-    const data = await CreatePost({post_id, uid, category_id, fk_workspace_id, title, content, imgPaths, videoPaths,  isWorkspaceShared,
-    selectedPageIds,});
+    const data = await CreatePost({ post_id, uid, category_id, fk_workspace_id, title, content, imgPaths, videoPaths});
 
     res.json(data);
 });
@@ -38,5 +36,31 @@ router.post("/getWorkspace", async (req, res) => {
     const data = await getUserWorkspaces(uid)
     res.json(data);
 })
+
+router.put("/edit/:post_id", upload.array("media", 5), async (req, res) => {
+  const { post_id } = req.params;
+  const { uid, category_id, fk_workspace_id, title, content } = req.body;
+  console.log("▶▶▶ 백엔드 디버그: req.body.uid 값:", req.body.uid);
+
+ console.log("req.files:", req.files);
+  const imgPaths = req.files
+    .filter((file) => file.mimetype.startsWith("image/"))
+    .map((file) => `http://localhost:4000/${file.path.replace(/^public\//, "")}`);
+
+  const videoPaths = req.files
+    .filter((file) => file.mimetype.startsWith("video/"))
+    .map((file) => `http://localhost:4000/${file.path.replace(/^public\//, "")}`);
+
+    const data = await UpdatePost({ post_id, uid, category_id, fk_workspace_id, title, content, imgPaths,videoPaths,});
+    res.json(data);
+});
+
+router.get("/:post_id", async (req, res) => {
+  const { post_id } = req.params;
+//   console.log("해당 게시글 ID",post_id)
+  const data = await getPostById(post_id);
+  res.json(data);
+});
+
 
 module.exports = router;
