@@ -26,9 +26,9 @@ const {
 const { getCookie } = require("./middlewares/Cookie.middleware");
 
 app.use(cors({ origin: "http://localhost:3000", credentials: true }));
-app.use(express.json());
+app.use(express.json({limit : "100MB"}));
 app.use(express.static(path.join(__dirname, "public")));
-app.use(express.urlencoded({ extended: false }));
+app.use(express.urlencoded({ limit: "100MB", extended: false }));
 app.use(morgan("dev"));
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 app.use("/images", express.static(path.join(__dirname, "public/images")));

@@ -1,4 +1,12 @@
-const { Post, Category, Comment, Heart, User, Workspacectgrs } = require("../../models/config");
+const { where } = require("sequelize");
+const {
+  Post,
+  Category,
+  Comment,
+  Heart,
+  User,
+  Workspacectgrs,
+} = require("../../models/config");
 
 // 일단 전체 카테고리에 대한 게시글 조회 함수
 const getAllPost = async () => {
@@ -12,6 +20,8 @@ const getAllPost = async () => {
             "post_id",
             "uid",
             "category_id",
+            "fk_workspace_id",
+            "workspace_pages",
             "title",
             "imgPaths",
             "videoPaths",
@@ -33,9 +43,16 @@ const getAllPost = async () => {
             },
             {
               model: Workspacectgrs,
-              attributes: ["workspace_id","workspace_name", "workspacectgrs_name", "depth", "workspacesubctgrs_name", "parent_id"],
-            }
-          ]
+              attributes: [
+                "workspace_id",
+                "workspace_name",
+                "workspacectgrs_name",
+                "depth",
+                "workspacesubctgrs_name",
+                "parent_id",
+              ],
+            },
+          ],
         },
         {
           model: Category,
@@ -191,8 +208,21 @@ const CreatePost = async ({
   imgPaths,
   videoPaths,
   isWorkspaceShared,
-  selectedPageIds,
+  workspace_pages,
 }) => {
+  console.log(
+    post_id,
+    uid,
+    category_id,
+    fk_workspace_id,
+    title,
+    content,
+    imgPaths,
+    videoPaths,
+    isWorkspaceShared,
+    workspace_pages,
+    "kkkk"
+  );
   try {
     const category = await Category.findByPk(category_id);
     if (!category) {
@@ -206,15 +236,16 @@ const CreatePost = async ({
       };
     }
 
-    const shared = isWorkspaceShared === true || isWorkspaceShared === 'true';
+    const shared = isWorkspaceShared === true || isWorkspaceShared === "true";
 
     if (!shared) {
       fk_workspace_id = null;
     } else {
-      if (!fk_workspace_id || !selectedPageIds) {
+      if (!fk_workspace_id || !workspace_pages) {
         return {
           state: 400,
-          message: "워크스페이스 공유를 선택한 경우, 워크스페이스 및 페이지 ID는 필수입니다.",
+          message:
+            "워크스페이스 공유를 선택한 경우, 워크스페이스 및 페이지 ID는 필수입니다.",
         };
       }
     }
@@ -224,26 +255,99 @@ const CreatePost = async ({
       uid,
       category_id,
       fk_workspace_id,
+      workspace_pages,
       title,
       content,
       imgPaths: JSON.stringify(imgPaths),
       videoPaths: JSON.stringify(videoPaths),
+      isWorkspaceShared,
+      workspace_pages,
     });
 
     return { state: 200, message: "게시글 등록 성공!!!", data };
   } catch (error) {
+    console.log(error, "error");
     return { state: 484, message: "게시글 등록 실패!!!", error };
   }
 };
 
+const UpdatePost = async ({
+  post_id,
+  uid,
+  title,
+  content,
+  category_id,
+  imgPaths,
+  videoPaths,
+}) => {
+  try {
+    const post = await Post.findByPk(post_id);
+    if (!post) {
+      return { state: 404, message: "해당 게시글을 찾을 수 없습니다." };
+    }
 
+    const data = await Post.update(
+      {
+        title,
+        uid,
+        content,
+        category_id,
+        imgPaths: JSON.stringify(imgPaths),
+        videoPaths: JSON.stringify(videoPaths),
+      },
+      {
+        where: { post_id },
+      }
+    );
 
+    return { state: 200, message: "게시글 수정 성공!", data };
+  } catch (error) {
+    return { state: 500, message: "게시글 수정 실패", error };
+  }
+};
+
+// // (async () => {
+// //   const response = await UpdatePost({
+// //     post_id: 9,
+// //     uid: 4270722392,
+// //     title: "비노dsdds",
+// //     content: "모르sdsdsd요.",
+// //     imgPaths: ["sdsdsdsdsd.jpg", "dsdsdsdsdsdsd.jpg"],
+// //     videoPaths: ["dsdsdsdsd.mp4"],
+// //     fk_workspace_id: 22,
+// //   });
+
+//   console.log("수정된 게시글:", response);
+// })();
+
+const getPostById = async (post_id) => {
+  try {
+    const data = await Post.findOne({ where: { post_id } });
+    return { state: 200, message: "게시글 조회 성공", data };
+  } catch (error) {
+    console.error("게시글 조회 에러:", error);
+    return { state: 500, message: "서버 오류", error };
+  }
+};
+
+//  디버깅: 즉시 실행
+// (async () => {
+//   const testPostId = 2; // 확인할 post_id 값
+//   const result = await getPostById(testPostId);
+//   console.log("📌 게시글 조회 결과:", result);
+// })();
 
 const getUserWorkspaces = async (uid) => {
   try {
     const data = await Workspacectgrs.findAll({
       where: { uid },
-      attributes: ["workspace_id","workspace_name", "workspacectgrs_name", "workspacesubctgrs_name", "parent_id"],
+      attributes: [
+        "workspace_id",
+        "workspace_name",
+        "workspacectgrs_name",
+        "workspacesubctgrs_name",
+        "parent_id",
+      ],
     });
     return { state: 200, message: "워크스페이스 조회 성공", data };
   } catch (error) {
@@ -255,8 +359,6 @@ const getUserWorkspaces = async (uid) => {
 //   const result = await getUserWorkspaces("suho123");
 //   console.log("유저 워크스페이스 ",result,);
 // })();
-
-
 
 const getMyPost = async (req, res) => {
   try {
@@ -345,4 +447,13 @@ const getMyPost = async (req, res) => {
   }
 };
 
-module.exports = { getAllPost, getSubPost, getEtcPost, CreatePost, getMyPost, getUserWorkspaces };
+module.exports = {
+  getAllPost,
+  getSubPost,
+  getEtcPost,
+  CreatePost,
+  UpdatePost,
+  getMyPost,
+  getUserWorkspaces,
+  getPostById,
+};
