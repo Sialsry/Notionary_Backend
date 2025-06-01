@@ -18,5 +18,5 @@ exports.upload = multer({
       cb(null, `${parsed.name}_${Date.now()}${parsed.ext}`);
     },
   }),
-  limits: { fileSize: 100 * 1024 * 1024 },
+  limits: { fileSize: 1000 * 1024 * 1024 },
 });
