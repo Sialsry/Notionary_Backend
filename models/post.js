@@ -62,7 +62,9 @@ class Post extends Model {
     });
     db.Post.belongsTo(db.Workspacectgrs, { 
       foreignKey: "fk_workspace_id",
-      targetKey: "workspace_id",     
+      targetKey: "fk_workspace_id",   
+       onDelete: 'CASCADE',
+      onUpdate : 'CASCADE'  
     });
     db.Post.hasMany(db.Comment, {
       foreignKey: "post_id",

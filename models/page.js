@@ -30,7 +30,9 @@ class Page extends Model {
   static associate(db) {
     this.belongsTo(db.Workspacectgrs, {
       foreignKey: "fk_workspace_id",
-      targetKey: "workspace_id",
+      targetKey: "fk_workspace_id",
+       onDelete: 'CASCADE',
+      onUpdate : 'CASCADE'
     });
     // db.Page.hasMany(db.Pages, {
     //   foreignKey: "project_id",

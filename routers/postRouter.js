@@ -25,7 +25,7 @@ router.post("/", upload.array("media", 5), async (req, res) => {
     workSpace_pages,
   } = req.body;
   const workspace_pages = JSON.stringify(
-    workSpace_pages.split(",").map((s) => Number(s.trim()))
+    workSpace_pages?.split(",").map((s) => Number(s.trim()))
   );
   console.log("fk1111", fk_workspace_id, workspace_pages);
 
