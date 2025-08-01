@@ -4,7 +4,6 @@ const cors = require("cors");
 const express = require("express");
 const jwt = require("jsonwebtoken");
 const morgan = require("morgan");
-const fs = require("fs");
 const path = require("path");
 const axios = require("axios");
 const cookieParser = require("cookie-parser");
@@ -23,10 +22,9 @@ const {
   workspaceRouter,
   detailRouter,
 } = require("./routers");
-const { getCookie } = require("./middlewares/Cookie.middleware");
 
 app.use(cors({ origin: "http://localhost:3000", credentials: true }));
-app.use(express.json({limit : "100MB"}));
+app.use(express.json({ limit: "100MB" }));
 app.use(express.static(path.join(__dirname, "public")));
 app.use(express.urlencoded({ limit: "100MB", extended: false }));
 app.use(morgan("dev"));
@@ -43,7 +41,6 @@ app.use("/teamproject", teamprojectRouter);
 app.use("/api/auth", authRouter);
 app.use("/workspace", workspaceRouter);
 app.use("/detail", detailRouter);
-
 
 app.get("/", (req, res) => {
   console.log("cookie11111");
