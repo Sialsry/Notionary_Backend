@@ -1,5 +1,9 @@
 # Node modules
 node_modules
 .env
+
+# Public files - exclude all images and videos except readme assets
 public/images/**/*
+!public/images/readmegif/
+!public/images/readmegif/**/*
 public/videos/**/*
